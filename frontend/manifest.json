@@ -1,0 +1,17 @@
+{
+  "name": "Smart Gym — Individual Edition",
+  "short_name": "SmartGym",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "description": "Safe monthly workout plans, daily logging, and on-device live camera form coaching.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

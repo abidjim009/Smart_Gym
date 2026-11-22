@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Gym — Individual Edition</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-step { animation: fadeSlideUp .25s ease-out forwards; }
+    .choice-card { transition: all .15s ease; }
+    .choice-card.selected { border-color: #10b981; background: rgba(16,185,129,.14); box-shadow: 0 0 0 1px #10b981; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-slate-950">
+  <!-- Toast Notification -->
+  <div id="toast-banner" class="hidden fixed bottom-5 right-5 z-50 px-4 py-3 rounded-2xl bg-emerald-600 text-white text-sm font-semibold shadow-2xl"></div>
+
+  <div id="landing-page" class="min-h-screen flex flex-col bg-slate-950">
+    <header class="border-b border-slate-800 bg-slate-950/90">
+      <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-400"></span><span class="font-extrabold text-xl">Smart<span class="text-emerald-400">Gym</span></span></div>
+        <div class="flex gap-2"><button onclick="openAuthGateway('login')" class="px-4 py-2 rounded-xl border border-slate-700 text-sm">Log In</button><button onclick="openAuthGateway('register')" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-sm">Register</button></div>
+      </div>
+    </header>
+    <main class="max-w-6xl mx-auto px-4 py-14 grid lg:grid-cols-2 gap-10 items-center flex-1">
+      <div><span class="text-xs px-3 py-1.5 rounded-full bg-emerald-950 text-emerald-300">AI Form Coach • 12-Week Plans</span><h1 class="text-4xl sm:text-5xl font-black mt-5">Train smarter with your <span class="text-emerald-400">personal AI coach.</span></h1><p class="text-slate-300 mt-4">Personalized workouts, local camera form analysis, and prescription-aware exercise matching.</p><div class="flex flex-wrap gap-3 mt-6"><button onclick="openAuthGateway('register')" class="px-6 py-3 rounded-2xl bg-emerald-500 text-slate-950 font-bold">Register as Athlete →</button><button onclick="openAuthGateway('login')" class="px-6 py-3 rounded-2xl border border-slate-700">Member Log In</button></div></div>
+      <div class="relative rounded-3xl bg-slate-900 border border-slate-800 p-8 text-center"><div class="mx-auto w-52 h-52 rounded-full border-4 border-emerald-400/40 flex items-center justify-center"><div class="text-7xl">🧍</div></div><div class="mt-5 p-3 rounded-xl bg-slate-800 flex justify-between"><span>Squat Rep 8</span><strong class="text-emerald-400">98/100</strong></div></div>
+    </main>
+  </div>
+
+  <div id="auth-page" class="hidden min-h-screen flex items-center justify-center p-4 bg-slate-950">
+    <div class="max-w-lg w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
+      <div class="flex justify-between mb-5"><button onclick="openLandingPage()" class="text-xs text-slate-400">← Landing</button><span class="text-xs text-emerald-400">Athlete Portal</span></div>
+      <div class="flex p-1 rounded-2xl bg-slate-950 mb-5"><button id="tab-btn-register" class="flex-1 py-3 rounded-xl bg-emerald-600 text-white text-sm font-bold">Register</button><button id="tab-btn-login" class="flex-1 py-3 rounded-xl text-slate-400 text-sm">Log In</button></div>
+      <div id="auth-panel-register">
+        <h2 class="text-xl font-bold mb-4">Create Athlete Profile</h2><p id="reg-error" class="hidden text-xs text-rose-300 mb-3"></p>
+        <form id="form-athlete-register" class="space-y-3">
+          <div class="grid sm:grid-cols-2 gap-3"><input id="reg-name" required placeholder="Athlete Name" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"><input id="reg-email" type="email" required placeholder="Email" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"></div>
+          <div class="grid sm:grid-cols-2 gap-3"><input id="reg-password" type="password" required minlength="6" placeholder="Password" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"><input id="reg-age" type="number" min="16" max="100" value="23" required class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"></div>
+          <div class="grid grid-cols-2 gap-2"><button type="button" data-reg-gender="male" class="py-3 rounded-xl border-2 border-emerald-400 bg-emerald-950/50">♂ Male</button><button type="button" data-reg-gender="female" class="py-3 rounded-xl border border-slate-700">♀ Female</button></div>
+          <div class="grid sm:grid-cols-2 gap-3"><div class="flex"><input id="reg-height" type="number" value="178" step="0.1" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3"><select id="reg-height-unit" class="bg-slate-800 border border-slate-700 rounded-xl px-2"><option value="cm">cm</option><option value="ft">ft</option></select></div><div class="flex"><input id="reg-weight" type="number" value="70" step="0.1" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3"><select id="reg-weight-unit" class="bg-slate-800 border border-slate-700 rounded-xl px-2"><option value="kg">kg</option><option value="lb">lb</option></select></div></div>
+          <div id="reg-live-metrics" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs flex justify-between"><span>Live BMI</span><span>Daily Calories</span></div>
+          <div class="grid sm:grid-cols-2 gap-3"><select id="reg-goal" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"><option value="build_strength">Build Muscle</option><option value="lose_weight">Lose Weight</option><option value="move_more">Move More</option><option value="stay_mobile">Stay Mobile</option><option value="recover">Recovery</option></select><select id="reg-equipment" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"><option value="none">No Equipment</option><option value="home_basics">Home Basics</option><option value="full_gym">Full Gym</option></select></div>
+          <button id="btn-reg-submit" type="submit" class="w-full py-3.5 rounded-2xl bg-emerald-500 text-slate-950 font-bold">Create Athlete Account →</button>
+        </form>
+      </div>
+      <div id="auth-panel-login" class="hidden"><h2 class="text-xl font-bold mb-4">Welcome Back</h2><p id="login-error" class="hidden text-xs text-rose-300 mb-3"></p><form id="form-athlete-login" class="space-y-3"><input id="login-email" type="email" required placeholder="Email" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"><input id="login-password" type="password" required placeholder="Password" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"><button id="btn-login-submit" type="submit" class="w-full py-3.5 rounded-2xl bg-sky-500 text-slate-950 font-bold">Sign In →</button></form><button id="btn-enter-demo-mode" class="w-full text-xs text-slate-400 mt-4 underline">Continue in Offline Guest Mode</button></div>
+    </div>
+  </div>
+
+  <div id="main-app-shell" class="hidden min-h-screen flex flex-col">
+    <header class="border-b border-slate-800/90 bg-slate-900/95 sticky top-0 z-30 backdrop-blur">
+      <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <button data-tab="today" class="flex items-center gap-2.5 text-left">
+          <span class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center"><span class="w-3 h-3 rounded-full bg-emerald-400"></span></span>
+          <span class="font-bold text-lg tracking-tight text-white">Smart Gym</span>
+          <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-emerald-400 border border-slate-700">Individual</span>
+        </button>
+        <div class="flex items-center gap-2.5 text-sm">
+          <button id="btn-reopen-welcome" type="button" class="hidden sm:inline-flex min-h-[40px] px-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-xs">Setup Wizard</button>
+          <button id="btn-header-profile" type="button" title="Open Athlete Profile & Settings" class="min-h-[40px] px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 flex items-center gap-2 text-slate-200 font-medium"><span id="header-user-avatar" class="w-6 h-6 rounded-full bg-emerald-600/30 border border-emerald-500/50 text-emerald-300 text-xs font-bold flex items-center justify-center">A</span><span id="header-user-name">Athlete</span><span id="header-sync-badge" class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">Guest</span></button>
+          <button id="btn-header-auth" type="button" class="min-h-[40px] px-3.5 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 font-medium border border-emerald-500/40">Sync / Sign In</button>
+        </div>
+      </div>
+
+      <nav class="max-w-5xl mx-auto px-4 pb-2.5 flex gap-1.5 overflow-x-auto text-sm font-medium">
+        <button data-tab="today" class="min-h-[40px] px-4 py-1.5 rounded-xl bg-emerald-600 text-white whitespace-nowrap">Today</button>
+        <button data-tab="fitwithai" class="min-h-[40px] px-4 py-1.5 rounded-xl text-sky-300 hover:bg-slate-800 font-semibold whitespace-nowrap">✨ fitwithAI</button>
+        <button data-tab="coach" class="min-h-[40px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Coach</button>
+        <button data-tab="prescription" class="min-h-[40px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Prescription</button>
+        <button data-tab="plan" class="min-h-[40px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Monthly Plan</button>
+        <button data-tab="library" class="min-h-[40px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Library</button>
+        <button data-tab="progress" class="min-h-[40px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Progress</button>
+        <button data-tab="profile" class="min-h-[40px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Athlete &amp; Safety</button>
+      </nav>
+    </header>
+
+    <main class="max-w-5xl w-full mx-auto px-4 py-6 flex-1">
+      <section id="tab-today" class="tab-panel"><div id="today-content"></div></section>
+      <!-- FITWITHAI TAB -->
+      <section id="tab-fitwithai" class="tab-panel hidden">
+        <div id="fitwithai-root"></div>
+      </section>
+      <section id="tab-plan" class="tab-panel hidden"><div id="plan-content"></div></section>
+
+      <section id="tab-coach" class="tab-panel hidden">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div><h2 class="text-xl font-bold">AI Form Coach</h2><p class="text-xs text-slate-400">Pose tracking runs locally in your browser. Video is never uploaded to the server.</p></div>
+            <select id="coach-exercise-select" title="Coach exercise" aria-label="Coach exercise" class="min-h-[44px] bg-slate-800 border border-slate-700 rounded-xl px-3.5 text-sm"></select>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-3 mb-4">
+            <button type="button" id="btn-mode-live" class="min-h-[64px] p-3.5 rounded-2xl bg-emerald-600/15 border-2 border-emerald-500 text-left"><div class="flex justify-between"><span class="font-bold text-sm">1. Live Camera</span><span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">Real-Time</span></div><p class="text-xs text-slate-300 mt-1">Use your webcam for live rep counting and cues.</p></button>
+            <button type="button" id="btn-mode-upload" class="min-h-[64px] p-3.5 rounded-2xl bg-slate-800/70 border border-slate-700 text-left"><div class="flex justify-between"><span class="font-bold text-sm">2. Manual Video Upload</span><span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300">Recorded Clip</span></div><p class="text-xs text-slate-400 mt-1">Analyze an MP4, WebM, or MOV recording locally.</p></button>
+          </div>
+
+          <p id="coach-setup-guide" class="text-xs text-emerald-300 bg-emerald-950/50 border border-emerald-800/60 px-3 py-2 rounded-xl mb-4">Camera setup: Side or 45° angle, 2 meters away, full body visible</p>
+
+          <div id="panel-coach-live">
+            <div id="coach-start-controls" class="space-y-3 mb-4">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/70 border border-slate-700 text-sm cursor-pointer"><input id="coach-consent-check" type="checkbox" class="w-5 h-5 accent-emerald-500"><span>I consent to on-device camera pose tracking.</span></label>
+              <button id="btn-coach-check" type="button" class="min-h-[48px] px-6 py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm">1. Start Camera &amp; Run Setup Check</button>
+            </div>
+            <div id="coach-active-controls" class="hidden space-y-3 mb-4"><div id="coach-setup-status" class="text-sm px-3.5 py-2.5 rounded-xl bg-slate-800">Initializing camera...</div><div class="flex flex-wrap gap-2.5"><button id="btn-coach-begin-set" type="button" disabled class="min-h-[48px] px-5 rounded-xl bg-emerald-600 disabled:opacity-40 font-bold text-sm">2. Begin Rep Counting</button><button id="btn-coach-finish" type="button" class="min-h-[48px] px-5 rounded-xl bg-sky-600 font-bold text-sm">Finish &amp; Save Set</button><button id="btn-coach-stop" type="button" class="min-h-[48px] px-5 rounded-xl bg-rose-600 font-bold text-sm">STOP</button></div></div>
+          </div>
+
+          <div id="panel-coach-upload" class="hidden space-y-3 mb-4">
+            <div class="p-4 rounded-2xl bg-slate-800/70 border border-dashed border-slate-600 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-3"><div><label for="coach-video-file" class="block text-sm font-semibold">Choose Workout Video File</label><p class="text-xs text-slate-400">Processed locally—never sent to a server.</p></div><select id="coach-upload-speed" title="Video playback speed" class="min-h-[40px] bg-slate-900 border border-slate-700 rounded-xl px-3 text-xs"><option value="1">1.0x Normal</option><option value="0.75">0.75x Slow</option></select></div>
+              <input id="coach-video-file" type="file" accept="video/mp4,video/webm,video/quicktime,video/*" class="block w-full text-xs text-slate-300 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-700 file:text-white">
+              <div class="flex flex-wrap gap-2.5"><button id="btn-upload-analyze" type="button" class="min-h-[46px] px-5 rounded-xl bg-sky-600 text-white font-bold text-sm">Analyze Uploaded Video</button><button id="btn-upload-finish" type="button" class="hidden min-h-[46px] px-5 rounded-xl bg-emerald-600 text-white font-bold text-sm">Finish &amp; Save Report</button><button id="btn-upload-stop" type="button" class="hidden min-h-[46px] px-4 rounded-xl bg-rose-600 text-white font-bold text-sm">Cancel</button></div>
+            </div>
+          </div>
+
+          <div class="relative max-w-xl mx-auto rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 aspect-video">
+            <video id="coach-video" class="w-full h-full object-contain bg-black" muted></video>
+            <canvas id="coach-canvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+            <div class="absolute top-3 left-3 right-3 flex items-center justify-between bg-slate-950/85 px-4 py-2 rounded-xl border border-slate-800"><div><span class="text-[11px] text-slate-400 block">Reps / Secs</span><span id="coach-rep-count" class="text-xl font-bold text-emerald-400">0</span></div><p id="coach-live-cue" class="text-xs sm:text-sm font-medium text-center px-2">Ready when you are</p><div class="text-right"><span class="text-[11px] text-slate-400 block">Last Rep</span><span id="coach-last-score" class="text-base font-bold text-sky-400">—</span></div></div>
+          </div>
+          <div id="coach-report-box" class="hidden mt-4 p-4 rounded-xl bg-slate-800/90 border border-emerald-600/50"></div>
+        </div>
+      </section>
+
+      <section id="tab-prescription" class="tab-panel hidden space-y-5">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 sm:p-6">
+          <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <div><span class="text-xs uppercase tracking-wider text-emerald-400 font-semibold">Consent-Based Guidance</span><h2 class="text-xl font-bold mt-0.5">Prescription &amp; Physio Note Analyzer</h2><p class="text-xs text-slate-400 mt-1">Upload or paste doctor recommendations and match them with verified exercise instructions and demos.</p></div>
+            <span class="text-[11px] px-2.5 py-1 rounded-full bg-amber-950/80 text-amber-300 border border-amber-600/40">Not Medical Software</span>
+          </div>
+
+          <div class="mb-4"><span class="text-[11px] text-slate-400 block mb-1.5">Quick test examples:</span><div class="flex flex-wrap gap-2 text-xs">
+            <button type="button" data-rx-sample="Doctor advised: Glute bridge and Bird-dog daily for mild lower back stiffness. Avoid heavy spinal loading." class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700">Back Rehab Sample</button>
+            <button type="button" data-rx-sample="Patient recovering from mild right knee strain. Needs gentle low-impact leg and core movement without deep knee bending." class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700">Knee Precaution Sample</button>
+            <button type="button" data-rx-sample="Physio note: Wall push-up, Seated band row, and Forearm plank 3x/week for shoulder posture." class="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700">Upper-Body Rehab Sample</button>
+          </div></div>
+
+          <form id="form-prescription-analyze" class="space-y-4">
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="p-4 rounded-2xl bg-slate-800/60 border border-dashed border-slate-600 space-y-3"><div><label for="rx-file-input" class="block text-sm font-semibold">1. Upload Prescription</label><p class="text-xs text-slate-400 mt-0.5">Image, PDF, or TXT file.</p></div><input id="rx-file-input" type="file" accept="image/*,.pdf,.txt" class="block w-full text-xs file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-700 file:text-white"><div id="rx-image-preview-wrap" class="hidden"><img id="rx-image-preview" alt="Prescription preview" class="max-h-36 rounded-xl border border-slate-700 object-contain bg-slate-950 p-1"></div></div>
+              <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700 space-y-2"><label for="rx-text-input" class="block text-sm font-semibold">2. Prescription Notes</label><textarea id="rx-text-input" rows="4" placeholder="Paste doctor or physiotherapist recommendations..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm"></textarea></div>
+            </div>
+            <label class="flex items-start gap-3 p-3.5 rounded-xl bg-slate-800/80 border border-slate-700 text-xs cursor-pointer"><input id="rx-consent-check" type="checkbox" required class="w-4 h-4 mt-0.5 accent-emerald-500"><span><strong>Explicit Consent:</strong> I consent to analyzing this note for library exercise matches. This is fitness guidance, not medical diagnosis.</span></label>
+            <div class="flex flex-wrap gap-3"><button type="submit" id="btn-rx-submit" class="min-h-[48px] px-6 rounded-xl bg-emerald-600 text-white font-bold text-sm">Analyze Prescription &amp; Match Exercises</button><button type="button" id="btn-rx-clear" class="min-h-[48px] px-4 rounded-xl bg-slate-800 text-slate-300 text-sm font-semibold">Clear</button></div>
+          </form>
+        </div>
+        <div id="rx-results-container" class="hidden space-y-5"></div>
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5"><h3 class="text-base font-bold mb-3">Saved Prescription Analyses</h3><div id="rx-history-list" class="space-y-2.5 text-sm"></div></div>
+      </section>
+
+      <section id="tab-library" class="tab-panel hidden">
+        <div class="flex flex-wrap gap-3 mb-4">
+          <input id="library-search" class="flex-1 min-w-48 p-3 rounded-xl bg-slate-900 border border-slate-700" placeholder="Search exercises">
+          <select id="library-equip-filter" title="Filter exercises by equipment" aria-label="Filter exercises by equipment" class="p-3 rounded-xl bg-slate-900 border border-slate-700">
+            <option value="all">All equipment</option><option value="none">No equipment</option><option value="home_basics">Home basics</option><option value="full_gym">Full gym</option>
+          </select>
+        </div>
+        <div id="library-grid" class="grid md:grid-cols-2 gap-4"></div>
+      </section>
+
+      <section id="tab-progress" class="tab-panel hidden">
+        <div class="grid sm:grid-cols-3 gap-3 mb-4">
+          <div class="p-4 rounded-2xl bg-slate-900 border border-slate-700"><div class="text-xs text-slate-400">Workouts</div><strong id="stat-workouts" class="text-2xl">0</strong></div>
+          <div class="p-4 rounded-2xl bg-slate-900 border border-slate-700"><div class="text-xs text-slate-400">Recent streak</div><strong id="stat-streak" class="text-2xl">0 days</strong></div>
+          <div class="p-4 rounded-2xl bg-slate-900 border border-slate-700"><div class="text-xs text-slate-400">Average form</div><strong id="stat-form-score" class="text-2xl">—</strong></div>
+        </div>
+        <div id="progress-history" class="space-y-3"></div>
+      </section>
+
+      <section id="tab-profile" class="tab-panel hidden space-y-5">
+        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/40 border border-slate-800 rounded-3xl p-6">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div id="prof-hero-avatar" class="w-16 h-16 rounded-2xl bg-emerald-600/25 border-2 border-emerald-500/60 text-emerald-300 text-2xl font-extrabold flex items-center justify-center">A</div>
+              <div>
+                <div class="flex flex-wrap items-center gap-2"><h1 id="prof-hero-name" class="text-2xl font-extrabold">Athlete</h1><span id="prof-hero-status" class="text-xs px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-600/40">Guest Mode</span><span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-emerald-400 border border-slate-700">Free Plan</span></div>
+                <p id="prof-hero-meta" class="text-xs text-slate-400 mt-1">guest@smartgym.local • Units: KG • Time Zone: UTC</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2"><button id="btn-prof-wizard" type="button" class="min-h-[42px] px-4 rounded-xl bg-slate-800 text-xs font-semibold border border-slate-700">Run Guided Setup</button><button id="btn-prof-auth-action" type="button" class="min-h-[42px] px-4 rounded-xl bg-emerald-600 text-white text-xs font-bold">Connect Account</button></div>
+          </div>
+          <details class="mt-4 pt-3 border-t border-slate-800 text-xs"><summary class="cursor-pointer font-semibold text-emerald-400">Compare Free vs. Paid Individual Plan Features</summary><div class="grid sm:grid-cols-2 gap-3 mt-3"><div class="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800"><p class="font-bold mb-1">Free Plan (Active)</p><ul class="space-y-1 text-slate-400 list-disc pl-4"><li>Exercise library and demos</li><li>Today, rest timer, and workout logging</li><li>Starter live camera coach</li></ul></div><div class="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-700/40"><p class="font-bold text-emerald-300 mb-1">Paid Plan (Coming Soon)</p><ul class="space-y-1 text-slate-300 list-disc pl-4"><li>Unlimited plan rebuilds</li><li>Unlimited coach sessions</li><li>Advanced exports and sync</li></ul></div></div></details>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-5">
+          <form id="form-profile-prefs" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+            <h2 class="text-lg font-bold">Athlete Identity &amp; Plan Settings</h2>
+            <div class="grid sm:grid-cols-2 gap-3"><div><label class="text-xs text-slate-400">Display Name</label><input id="prof-name" type="text" required title="Display name" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 text-sm"></div><div><label class="text-xs text-slate-400">Primary Goal</label><select id="prof-goal" title="Primary goal" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 text-sm"><option value="build_strength">Build Strength</option><option value="lose_weight">Lose Weight</option><option value="move_more">Move More</option><option value="stay_mobile">Stay Mobile</option><option value="recover">Recover Gently</option></select></div></div>
+            <div class="grid sm:grid-cols-2 gap-3"><div><label class="text-xs text-slate-400">Experience</label><select id="prof-exp" title="Experience" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 text-sm"><option value="new">New</option><option value="some">Some Experience</option><option value="experienced">Experienced</option></select></div><div><label class="text-xs text-slate-400">Equipment</label><select id="prof-equip" title="Equipment" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 text-sm"><option value="none">None</option><option value="home_basics">Home Basics</option><option value="full_gym">Full Gym</option></select></div></div>
+            <div class="grid grid-cols-3 gap-2.5"><div><label class="text-xs text-slate-400">Days</label><select id="prof-days" title="Days per week" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-2 text-sm"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div><div><label class="text-xs text-slate-400">Minutes</label><select id="prof-mins" title="Minutes per session" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-2 text-sm"><option value="15">15</option><option value="25">25</option><option value="40">40</option><option value="60">60</option></select></div><div><label class="text-xs text-slate-400">Units</label><select id="prof-units" title="Weight units" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-2 text-sm"><option value="kg">kg</option><option value="lb">lb</option></select></div></div>
+            <div class="grid sm:grid-cols-2 gap-3"><div><label class="text-xs text-slate-400">Language</label><select id="prof-lang" title="Language" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 text-sm"><option value="en">English</option><option value="bn">বাংলা</option></select></div><div><label class="text-xs text-slate-400">Time Zone</label><input id="prof-timezone" type="text" title="Time zone" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 text-xs"></div></div>
+            <button type="submit" class="w-full min-h-[46px] rounded-xl bg-emerald-600 font-bold text-sm">Save Preferences &amp; Refresh Plan</button>
+          </form>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between"><h2 class="text-lg font-bold">Health Screening &amp; Injuries</h2><button id="btn-retake-screening" type="button" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-emerald-400 border border-slate-700">Retake PAR-Q+</button></div>
+            <div id="prof-screening-banner" class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700 text-xs"></div>
+            <p class="text-xs font-medium">Protected Joints &amp; Limitations</p>
+            <div id="prof-limitations-grid" class="grid grid-cols-2 gap-2.5 text-xs"><label class="min-h-[44px] px-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center gap-2"><input type="checkbox" value="knee" class="prof-lim-check accent-emerald-500">Knee</label><label class="min-h-[44px] px-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center gap-2"><input type="checkbox" value="lower_back" class="prof-lim-check accent-emerald-500">Lower Back</label><label class="min-h-[44px] px-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center gap-2"><input type="checkbox" value="shoulder" class="prof-lim-check accent-emerald-500">Shoulder</label><label class="min-h-[44px] px-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center gap-2"><input type="checkbox" value="wrist" class="prof-lim-check accent-emerald-500">Wrist</label></div>
+            <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] text-slate-400">Flagged areas automatically exclude high-load exercises and reduce Live Coach depth targets.</div>
+          </div>
+
+          <form id="form-profile-reminders" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between"><div><h2 class="text-lg font-bold">Reminders &amp; Motivation</h2><p class="text-xs text-slate-400">Gentle nudges with rest-day streak protection.</p></div><label class="text-xs text-emerald-400"><input id="rem-enabled" type="checkbox" class="accent-emerald-500 mr-1">Enabled</label></div>
+            <div class="grid grid-cols-3 gap-2.5"><div><label class="text-xs text-slate-400">Reminder</label><input id="rem-time" type="time" title="Reminder time" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-2 text-sm"></div><div><label class="text-xs text-slate-400">Quiet Start</label><input id="rem-quiet-start" type="time" title="Quiet hours start" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-2 text-sm"></div><div><label class="text-xs text-slate-400">Quiet End</label><input id="rem-quiet-end" type="time" title="Quiet hours end" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-2 text-sm"></div></div>
+            <button type="submit" class="w-full min-h-[44px] rounded-xl bg-slate-800 border border-slate-700 font-semibold text-sm">Save Reminder Schedule</button>
+          </form>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+            <h2 class="text-lg font-bold">Privacy Consents &amp; Data</h2>
+            <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/70 border border-slate-700 text-xs"><div><p class="font-semibold">On-Device Camera Tracking</p><p class="text-slate-400">Video never leaves your device.</p></div><input id="consent-camera" type="checkbox" class="w-5 h-5 accent-emerald-500"></label>
+            <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/70 border border-slate-700 text-xs"><div><p class="font-semibold">Health Screening Storage</p><p class="text-slate-400">Enables injury-aware plan filtering.</p></div><input id="consent-health" type="checkbox" class="w-5 h-5 accent-emerald-500"></label>
+            <div class="grid grid-cols-2 gap-2.5"><button id="btn-export-data" type="button" class="min-h-[44px] rounded-xl bg-sky-700 text-white text-xs font-bold">Export JSON</button><button id="btn-delete-account" type="button" class="min-h-[44px] rounded-xl bg-rose-700 text-white text-xs font-bold">Delete Account &amp; Data</button></div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3"><h2 class="text-lg font-bold">Help &amp; Quick FAQ</h2><details class="p-3 rounded-xl bg-slate-800/60 border border-slate-800"><summary class="font-semibold cursor-pointer">Does the camera upload or record my video?</summary><p class="text-xs text-slate-400 mt-2">No. MediaPipe runs on your device. Only rep counts and numeric scores are stored.</p></details><details class="p-3 rounded-xl bg-slate-800/60 border border-slate-800"><summary class="font-semibold cursor-pointer">How are injuries protected?</summary><p class="text-xs text-slate-400 mt-2">Flagged body parts exclude high-load exercises and adjust Live Coach targets.</p></details><details class="p-3 rounded-xl bg-slate-800/60 border border-slate-800"><summary class="font-semibold cursor-pointer">Can I use the app offline?</summary><p class="text-xs text-slate-400 mt-2">Yes. Plans and logs stay locally and sync to the backend after login.</p></details></div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-800/80 py-4 px-4 text-center text-xs text-slate-400">
+      Smart Gym is fitness guidance, <strong>not medical software</strong>. It does not diagnose or treat any condition.
+    </footer>
+
+    <div id="onboarding-overlay" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 overflow-y-auto flex items-center justify-center p-4">
+      <div class="max-w-xl w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+        <div id="wizard-progress-header" class="hidden mb-6">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+            <span id="wizard-step-label" class="font-semibold text-emerald-400">Step 1 of 4</span>
+            <button type="button" id="btn-wizard-skip-top" class="text-slate-400 hover:text-white underline">Skip for now</button>
+          </div>
+          <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div id="wizard-progress-bar" class="h-full bg-emerald-500 transition-all duration-300"></div></div>
+        </div>
+
+        <div id="wizard-step-0" class="animate-step space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs"><span>Individual-First Edition</span><span>•</span><span>Offline Ready</span></div>
+          <div><h1 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight">Train safely anywhere—with a plan built around you.</h1><p class="text-slate-300 text-sm sm:text-base mt-2.5 leading-relaxed">Tell Smart Gym your goal, equipment, and sensitive joints for a safe plan and private on-device camera coaching.</p></div>
+          <div class="grid sm:grid-cols-3 gap-3 text-xs"><div class="p-3.5 rounded-2xl bg-slate-800/70 border border-slate-700"><p class="font-bold mb-1">Safe Monthly Plan</p><p class="text-slate-400">Avoids movements that load flagged injuries.</p></div><div class="p-3.5 rounded-2xl bg-slate-800/70 border border-slate-700"><p class="font-bold mb-1">One-Tap Today</p><p class="text-slate-400">Set logging, rest timer, and safe swaps.</p></div><div class="p-3.5 rounded-2xl bg-slate-800/70 border border-slate-700"><p class="font-bold mb-1">Private Camera</p><p class="text-slate-400">Video stays on your device.</p></div></div>
+          <div class="space-y-3 pt-2"><button type="button" id="btn-welcome-start" class="w-full min-h-[52px] rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold">Personalize My Plan (2 Minutes)</button><div class="grid grid-cols-2 gap-2.5"><button type="button" id="btn-welcome-skip" class="min-h-[46px] rounded-xl bg-slate-800 text-slate-200 font-semibold border border-slate-700">Skip &amp; Try Demo Now</button><button type="button" id="btn-welcome-signin" class="min-h-[46px] rounded-xl bg-slate-800/60 text-emerald-400 font-semibold border border-slate-700">Sign In / Sync</button></div></div>
+        </div>
+
+        <div id="wizard-step-1" class="hidden animate-step space-y-5">
+          <div><h2 class="text-xl font-bold">What should we call you, and what's your main goal?</h2><p class="text-xs text-slate-400 mt-1">Editable anytime in Safety &amp; Profile.</p></div>
+          <div><label class="text-xs text-slate-300">First Name or Nickname</label><input id="wiz-name" type="text" placeholder="e.g. Abid" class="w-full min-h-[46px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3.5 text-sm"></div>
+          <div class="grid sm:grid-cols-2 gap-2.5" id="wiz-goal-cards">
+            <button type="button" data-value="build_strength" class="choice-card selected min-h-[56px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Build Strength</p><p class="text-xs text-slate-400">Progressive reps &amp; resistance</p></button>
+            <button type="button" data-value="lose_weight" class="choice-card min-h-[56px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Lose Weight</p><p class="text-xs text-slate-400">Higher-tempo sessions</p></button>
+            <button type="button" data-value="move_more" class="choice-card min-h-[56px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Move More</p><p class="text-xs text-slate-400">Daily energy &amp; habit</p></button>
+            <button type="button" data-value="stay_mobile" class="choice-card min-h-[56px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Stay Mobile</p><p class="text-xs text-slate-400">Joint control and posture</p></button>
+            <button type="button" data-value="recover" class="choice-card sm:col-span-2 min-h-[56px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Recover Gently</p><p class="text-xs text-slate-400">Low-impact movement</p></button>
+          </div>
+          <div class="flex justify-between pt-2"><button type="button" data-wiz-prev="0" class="min-h-[46px] px-5 rounded-xl bg-slate-800 text-sm">Back</button><button type="button" data-wiz-next="2" class="min-h-[46px] px-6 rounded-xl bg-emerald-600 text-sm font-bold">Next: Experience &amp; Gear</button></div>
+        </div>
+
+        <div id="wizard-step-2" class="hidden animate-step space-y-5">
+          <div><h2 class="text-xl font-bold">Your experience &amp; available equipment</h2><p class="text-xs text-slate-400 mt-1">Only matching exercises will enter your plan.</p></div>
+          <div class="grid grid-cols-3 gap-2.5" id="wiz-exp-cards"><button type="button" data-value="new" class="choice-card selected min-h-[56px] p-3 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">New</p><p class="text-[11px] text-slate-400">Starting fresh</p></button><button type="button" data-value="some" class="choice-card min-h-[56px] p-3 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Some</p><p class="text-[11px] text-slate-400">Know basics</p></button><button type="button" data-value="experienced" class="choice-card min-h-[56px] p-3 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Experienced</p><p class="text-[11px] text-slate-400">Train regularly</p></button></div>
+          <div class="space-y-2" id="wiz-equip-cards"><button type="button" data-value="none" class="choice-card selected w-full min-h-[54px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">No Equipment</p><p class="text-xs text-slate-400">Bodyweight, outdoors, or home</p></button><button type="button" data-value="home_basics" class="choice-card w-full min-h-[54px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Home Basics</p><p class="text-xs text-slate-400">Dumbbells, bands, mat, or chair</p></button><button type="button" data-value="full_gym" class="choice-card w-full min-h-[54px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Full Gym</p><p class="text-xs text-slate-400">Barbells, benches, cables, and weights</p></button></div>
+          <div class="flex justify-between pt-2"><button type="button" data-wiz-prev="1" class="min-h-[46px] px-5 rounded-xl bg-slate-800 text-sm">Back</button><button type="button" data-wiz-next="3" class="min-h-[46px] px-6 rounded-xl bg-emerald-600 text-sm font-bold">Next: Schedule &amp; Units</button></div>
+        </div>
+
+        <div id="wizard-step-3" class="hidden animate-step space-y-5">
+          <div><h2 class="text-xl font-bold">Your weekly rhythm &amp; preferences</h2><p class="text-xs text-slate-400 mt-1">Rest days and a lighter final week are included.</p></div>
+          <div class="grid grid-cols-2 gap-3"><div><label class="text-xs text-slate-300">Workouts / Week</label><select id="wiz-days" title="Workouts per week" aria-label="Workouts per week" class="w-full min-h-[46px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3"><option value="2">2 days</option><option value="3" selected>3 days</option><option value="4">4 days</option><option value="5">5 days</option></select></div><div><label class="text-xs text-slate-300">Minutes / Session</label><select id="wiz-minutes" title="Minutes per session" aria-label="Minutes per session" class="w-full min-h-[46px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3"><option value="15">15 minutes</option><option value="25" selected>25 minutes</option><option value="40">40 minutes</option><option value="60">60 minutes</option></select></div></div>
+          <div class="grid grid-cols-2 gap-3"><div><label class="text-xs text-slate-300">Weight Units</label><select id="wiz-units" title="Weight units" aria-label="Weight units" class="w-full min-h-[46px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3"><option value="kg" selected>Kilograms</option><option value="lb">Pounds</option></select></div><div><label class="text-xs text-slate-300">Language</label><select id="wiz-lang" title="Language" aria-label="Language" class="w-full min-h-[46px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3"><option value="en" selected>English</option><option value="bn">বাংলা</option></select></div></div>
+          <div><label class="text-xs text-slate-300" for="wiz-timezone">Time Zone (Auto-Detected)</label><input id="wiz-timezone" type="text" placeholder="UTC" title="Time zone" class="w-full min-h-[44px] mt-1.5 bg-slate-800/70 border border-slate-700 rounded-xl px-3.5 text-xs"></div>
+          <div class="flex justify-between pt-2"><button type="button" data-wiz-prev="2" class="min-h-[46px] px-5 rounded-xl bg-slate-800 text-sm">Back</button><button type="button" data-wiz-next="4" class="min-h-[46px] px-6 rounded-xl bg-emerald-600 text-sm font-bold">Next: Quick Safety Check</button></div>
+        </div>
+
+        <form id="form-wizard-complete" class="hidden animate-step space-y-4">
+          <div><h2 class="text-xl font-bold">Quick Health &amp; Injury Safety Check</h2><p class="text-xs text-slate-400 mt-1">Any Yes keeps the plan gentle and advises a doctor check.</p></div>
+          <div class="space-y-2 text-sm">
+            <label class="flex justify-between items-center p-3 rounded-xl bg-slate-800 border border-slate-700"><span>Chest pain during activity?</span><select name="q_chest" title="Chest pain during activity" class="min-h-[38px] bg-slate-900 rounded-lg px-2"><option value="no">No</option><option value="yes">Yes</option></select></label>
+            <label class="flex justify-between items-center p-3 rounded-xl bg-slate-800 border border-slate-700"><span>Lose balance from dizziness?</span><select name="q_dizzy" title="Dizziness concern" class="min-h-[38px] bg-slate-900 rounded-lg px-2"><option value="no">No</option><option value="yes">Yes</option></select></label>
+            <label class="flex justify-between items-center p-3 rounded-xl bg-slate-800 border border-slate-700"><span>Bone or joint issue worsened by movement?</span><select name="q_bone" title="Bone or joint concern" class="min-h-[38px] bg-slate-900 rounded-lg px-2"><option value="no">No</option><option value="yes">Yes</option></select></label>
+            <label class="flex justify-between items-center p-3 rounded-xl bg-slate-800 border border-slate-700"><span>Prescribed heart or blood pressure medication?</span><select name="q_meds" title="Medication concern" class="min-h-[38px] bg-slate-900 rounded-lg px-2"><option value="no">No</option><option value="yes">Yes</option></select></label>
+          </div>
+          <div><span class="text-xs text-slate-300 block mb-2">Sensitive areas to protect</span><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs"><label class="min-h-[44px] px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" name="limitations" value="knee" class="accent-emerald-500">Knee</label><label class="min-h-[44px] px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" name="limitations" value="lower_back" class="accent-emerald-500">Lower Back</label><label class="min-h-[44px] px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" name="limitations" value="shoulder" class="accent-emerald-500">Shoulder</label><label class="min-h-[44px] px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" name="limitations" value="wrist" class="accent-emerald-500">Wrist</label></div></div>
+          <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-800/50 text-xs text-slate-300"><input type="checkbox" required checked class="mt-0.5 accent-emerald-500"><span>I understand this provides fitness guidance, not medical care.</span></label>
+          <div class="flex justify-between pt-2"><button type="button" data-wiz-prev="3" class="min-h-[46px] px-5 rounded-xl bg-slate-800 text-sm">Back</button><button type="submit" class="min-h-[48px] px-6 rounded-xl bg-emerald-600 text-sm font-bold">Build My Plan &amp; Start</button></div>
+        </form>
+      </div>
+    </div>
+
+    <div id="modal-auth" class="hidden fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4">
+      <form id="form-auth" class="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-6 space-y-3">
+        <div class="flex justify-between items-center">
+          <h2 class="text-lg font-bold text-white">Account Sync</h2>
+          <button type="button" data-close-modal="modal-auth" class="text-slate-400 hover:text-white px-2 py-1">✕</button>
+        </div>
+        <p id="auth-error" class="hidden text-xs text-rose-400 bg-rose-950/60 p-2.5 rounded-xl"></p>
+        <label class="block text-sm">Authentication mode
+          <select name="authMode" title="Authentication mode" aria-label="Authentication mode" class="w-full min-h-[44px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+            <option value="register">Create New Account</option>
+            <option value="login">Sign In to Existing Account</option>
+          </select>
+        </label>
+        <input name="displayName" type="text" placeholder="Display name (for registration)" class="w-full min-h-[44px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+        <input name="email" type="email" required placeholder="you@example.com" class="w-full min-h-[44px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+        <input name="password" type="password" required minlength="6" placeholder="Password (min 6 characters)" class="w-full min-h-[44px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+        <input name="birthYear" type="number" value="2000" min="1930" max="2010" placeholder="Birth year" title="Birth year" class="w-full min-h-[44px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+        <button type="submit" class="w-full min-h-[46px] rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm">Continue</button>
+      </form>
+    </div>
+
+    <script type="module" src="js/app.js?v=6"></script>
+    <script>
+      if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+    </script>
+  </div>
+</body>
+</html>
