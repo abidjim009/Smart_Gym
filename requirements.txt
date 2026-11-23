@@ -1,0 +1,83 @@
+# ==============================================================================
+
+# Smart Gym (Individual-First Edition) — System & Package Requirements
+
+# ==============================================================================
+
+
+
+# 1. Runtime & Local Server Environment
+
+# ------------------------------------------------------------------------------
+
+Node.js >= 18.0.0
+
+npm >= 9.0.0
+
+XAMPP >= 8.0 (Apache + MySQL / MariaDB)
+
+phpMyAdmin (included with XAMPP for importing backend/database/smart_gym.sql)
+
+
+
+# 2. Backend Node.js Dependencies (install via `npm install` inside backend/)
+
+# ------------------------------------------------------------------------------
+
+express@^4.21.2
+
+mysql2@^3.12.0
+
+bcrypt@^5.1.1
+
+jsonwebtoken@^9.0.2
+
+helmet@^8.0.0
+
+cors@^2.8.5
+
+express-rate-limit@^7.5.0
+
+zod@^3.24.1
+
+dotenv@^16.4.7
+
+multer@^1.4.5-lts.1
+
+node-cron@^3.0.3
+
+@anthropic-ai/sdk@^0.39.0
+
+
+
+# 3. Frontend & On-Device Vision Dependencies (loaded via browser / CDN)
+
+# ------------------------------------------------------------------------------
+
+tailwindcss (CDN v3)
+
+@mediapipe/tasks-vision (MediaPipe Pose Landmarker Lite — runs 100% on-device)
+
+
+
+# 4. Hardware & Browser Requirements
+
+# ------------------------------------------------------------------------------
+
+Browser: Google Chrome, Microsoft Edge, Firefox, or Safari (with WebGL & WebRTC)
+
+Camera: Built-in or USB webcam (required for Live Camera Form Coach)
+
+Secure Context: http://localhost:4000 (local) or HTTPS tunnel (for mobile testing)
+
+
+
+# 5. Quick Installation Commands
+
+# ------------------------------------------------------------------------------
+
+# cd smart-gym/backend
+
+# npm install express mysql2 bcrypt jsonwebtoken helmet cors express-rate-limit zod dotenv multer node-cron @anthropic-ai/sdk
+
+# npm start

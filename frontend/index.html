@@ -3,133 +3,402 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Gym — Individual Edition</title>
+  <title>Smart Gym — Personal Training &amp; Form Tracker</title>
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="icon.svg">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-step { animation: fadeSlideUp .25s ease-out forwards; }
-    .choice-card { transition: all .15s ease; }
-    .choice-card.selected { border-color: #10b981; background: rgba(16,185,129,.14); box-shadow: 0 0 0 1px #10b981; }
+    /* ======================================================================
+       60 / 30 / 10 CLEAN THEME SYSTEM
+       60% Main:      Midnight Black (#0B0D12)
+       30% Secondary: Electric Blue  (#1E5EFF)
+       10% Accent:    Sunset Orange  (#FF7A1A)
+       ====================================================================== */
+    :root {
+      --midnight-base: #0B0D12;
+      --midnight-surface: #121622;
+      --midnight-elevated: #181F30;
+      --electric-blue: #1E5EFF;
+      --electric-blue-bright: #3B82F6;
+      --electric-blue-tint: rgba(30, 94, 255, 0.14);
+      --electric-blue-border: rgba(59, 130, 246, 0.30);
+      --sunset-orange: #FF7A1A;
+      --sunset-orange-hover: #FF8F3D;
+      --sunset-orange-tint: rgba(255, 122, 26, 0.14);
+      --sunset-orange-border: rgba(255, 122, 26, 0.42);
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-step { animation: fadeSlideUp 0.2s ease-out forwards; }
+    .choice-card { transition: border-color 0.15s ease, background-color 0.15s ease; }
+
+    /* 60% Main: Midnight Black */
+    body,
+    #landing-page,
+    #auth-page,
+    #main-app-shell {
+      background-color: var(--midnight-base) !important;
+      background-image: none !important;
+      color: #F8FAFC;
+    }
+
+    header {
+      background-color: var(--midnight-base) !important;
+      border-bottom-color: var(--electric-blue-border) !important;
+    }
+
+    .bg-slate-950,
+    .bg-slate-950\/70,
+    .bg-slate-950\/80,
+    .bg-slate-950\/85,
+    .bg-slate-950\/95 {
+      background-color: var(--midnight-base) !important;
+    }
+
+    .bg-slate-900,
+    .bg-slate-900\/70,
+    .bg-slate-900\/80,
+    .bg-slate-900\/90,
+    .bg-slate-900\/95,
+    .bg-\[\#070b1e\] {
+      background-color: var(--midnight-surface) !important;
+      border-color: var(--electric-blue-border) !important;
+    }
+
+    .bg-slate-800,
+    .bg-slate-800\/50,
+    .bg-slate-800\/60,
+    .bg-slate-800\/70,
+    .bg-slate-800\/80,
+    .bg-slate-800\/90 {
+      background-color: var(--midnight-elevated) !important;
+      border-color: rgba(59, 130, 246, 0.24) !important;
+    }
+
+    /* 30% Secondary: Electric Blue */
+    .border-slate-800,
+    .border-slate-800\/80,
+    .border-slate-800\/90,
+    .border-slate-700,
+    .border-slate-700\/80 {
+      border-color: var(--electric-blue-border) !important;
+    }
+
+    .bg-sky-600,
+    .bg-sky-500,
+    .bg-sky-700,
+    .bg-indigo-600 {
+      background-color: var(--electric-blue) !important;
+      color: #FFFFFF !important;
+      border-color: var(--electric-blue-bright) !important;
+    }
+
+    .bg-sky-600:hover,
+    .bg-sky-500:hover,
+    .bg-sky-700:hover {
+      background-color: var(--electric-blue-bright) !important;
+    }
+
+    .bg-sky-950,
+    .bg-sky-950\/30,
+    .bg-sky-950\/40,
+    .bg-sky-950\/50,
+    .bg-sky-950\/70,
+    .bg-sky-600\/15,
+    .bg-sky-600\/25,
+    .bg-sky-500\/15,
+    .bg-sky-500\/20 {
+      background-color: var(--electric-blue-tint) !important;
+      border-color: var(--electric-blue-border) !important;
+    }
+
+    .text-sky-400,
+    .text-sky-300,
+    .text-sky-200 {
+      color: #60A5FA !important;
+    }
+
+    .border-sky-400,
+    .border-sky-500,
+    .border-sky-700\/50,
+    .border-sky-800\/50 {
+      border-color: var(--electric-blue-bright) !important;
+    }
+
+    .from-slate-900.to-emerald-950\/50,
+    .from-sky-950\/50.to-slate-900,
+    .from-emerald-950\/70.via-slate-900.to-sky-950\/60 {
+      background-image: none !important;
+      background-color: var(--midnight-surface) !important;
+      border-color: var(--electric-blue-border) !important;
+    }
+
+    /* 10% Accent: Sunset Orange */
+    .bg-emerald-600,
+    .bg-emerald-500 {
+      background-color: var(--sunset-orange) !important;
+      color: #0B0D12 !important;
+      font-weight: 700 !important;
+      border-color: var(--sunset-orange) !important;
+      box-shadow: none !important;
+    }
+
+    .bg-emerald-600:hover,
+    .bg-emerald-500:hover {
+      background-color: var(--sunset-orange-hover) !important;
+    }
+
+    .bg-emerald-600\/15,
+    .bg-emerald-600\/20,
+    .bg-emerald-600\/25,
+    .bg-emerald-600\/30,
+    .bg-emerald-500\/10,
+    .bg-emerald-500\/15,
+    .bg-emerald-500\/20,
+    .bg-emerald-950,
+    .bg-emerald-950\/50,
+    .bg-emerald-950\/60,
+    .bg-emerald-950\/70,
+    .bg-emerald-950\/90 {
+      background-color: var(--sunset-orange-tint) !important;
+      border-color: var(--sunset-orange-border) !important;
+    }
+
+    .text-emerald-400,
+    .text-emerald-300,
+    .text-emerald-200 {
+      color: var(--sunset-orange) !important;
+    }
+
+    .border-emerald-500,
+    .border-emerald-400,
+    .border-emerald-500\/30,
+    .border-emerald-500\/40,
+    .border-emerald-500\/50,
+    .border-emerald-600\/40,
+    .border-emerald-600\/50 {
+      border-color: var(--sunset-orange) !important;
+    }
+
+    .choice-card.selected {
+      border-color: var(--sunset-orange) !important;
+      background-color: var(--sunset-orange-tint) !important;
+    }
+
+    .from-emerald-500.to-sky-400,
+    .from-emerald-400.to-sky-400 {
+      background-image: none !important;
+      background-color: var(--sunset-orange) !important;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--sunset-orange) !important;
+      outline: none !important;
+    }
+
+    #toast-banner {
+      background-color: var(--sunset-orange) !important;
+      color: #0B0D12 !important;
+      border: 1px solid #FFB074 !important;
+    }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-slate-950">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
   <!-- Toast Notification -->
-  <div id="toast-banner" class="hidden fixed bottom-5 right-5 z-50 px-4 py-3 rounded-2xl bg-emerald-600 text-white text-sm font-semibold shadow-2xl"></div>
+  <div id="toast-banner" class="hidden fixed bottom-5 right-5 z-50 px-4 py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold shadow-lg"></div>
 
+  <!-- ===================================================================== -->
+  <!-- 1. LANDING PAGE (SIMPLE & CLEAN)                                      -->
+  <!-- ===================================================================== -->
   <div id="landing-page" class="min-h-screen flex flex-col bg-slate-950">
-    <header class="border-b border-slate-800 bg-slate-950/90">
-      <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-400"></span><span class="font-extrabold text-xl">Smart<span class="text-emerald-400">Gym</span></span></div>
-        <div class="flex gap-2"><button onclick="openAuthGateway('login')" class="px-4 py-2 rounded-xl border border-slate-700 text-sm">Log In</button><button onclick="openAuthGateway('register')" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-sm">Register</button></div>
+    <header class="border-b border-slate-800 bg-slate-950 sticky top-0 z-30">
+      <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          <span class="font-bold text-xl tracking-tight">Smart<span class="text-emerald-400">Gym</span></span>
+        </div>
+        <div class="flex gap-2.5">
+          <button onclick="openAuthGateway('login')" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm">Log In</button>
+          <button onclick="openAuthGateway('register')" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-sm">Register</button>
+        </div>
       </div>
     </header>
-    <main class="max-w-6xl mx-auto px-4 py-14 grid lg:grid-cols-2 gap-10 items-center flex-1">
-      <div><span class="text-xs px-3 py-1.5 rounded-full bg-emerald-950 text-emerald-300">AI Form Coach • 12-Week Plans</span><h1 class="text-4xl sm:text-5xl font-black mt-5">Train smarter with your <span class="text-emerald-400">personal AI coach.</span></h1><p class="text-slate-300 mt-4">Personalized workouts, local camera form analysis, and prescription-aware exercise matching.</p><div class="flex flex-wrap gap-3 mt-6"><button onclick="openAuthGateway('register')" class="px-6 py-3 rounded-2xl bg-emerald-500 text-slate-950 font-bold">Register as Athlete →</button><button onclick="openAuthGateway('login')" class="px-6 py-3 rounded-2xl border border-slate-700">Member Log In</button></div></div>
-      <div class="relative rounded-3xl bg-slate-900 border border-slate-800 p-8 text-center"><div class="mx-auto w-52 h-52 rounded-full border-4 border-emerald-400/40 flex items-center justify-center"><div class="text-7xl">🧍</div></div><div class="mt-5 p-3 rounded-xl bg-slate-800 flex justify-between"><span>Squat Rep 8</span><strong class="text-emerald-400">98/100</strong></div></div>
+
+    <main class="max-w-5xl mx-auto px-4 py-14 grid lg:grid-cols-2 gap-10 items-center flex-1">
+      <div class="animate-step space-y-5">
+        <span class="inline-block text-xs font-semibold px-3 py-1 rounded-lg bg-sky-950 text-sky-300 border border-sky-700/50">
+          Personal Workout Planner &amp; Form Tracker
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-extrabold leading-tight">
+          Structured workouts built around <span class="text-emerald-400">your body and goals.</span>
+        </h1>
+        <p class="text-slate-300 text-base leading-relaxed">
+          Log your sets and reps, follow a safe 4-week routine tailored to your equipment and joint health, and check your exercise posture privately on your own device.
+        </p>
+        <div class="flex flex-wrap gap-3 pt-1">
+          <button onclick="openAuthGateway('register')" class="px-6 py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-sm">Create Athlete Account</button>
+          <button onclick="openAuthGateway('login')" class="px-6 py-3 rounded-xl bg-sky-600 text-white font-semibold text-sm">Sign In</button>
+        </div>
+        <div class="grid grid-cols-3 gap-4 pt-5 border-t border-slate-800 text-xs">
+          <div><p class="text-lg font-bold text-white">4-Week Plans</p><p class="text-slate-400">Adapted to your schedule</p></div>
+          <div><p class="text-lg font-bold text-emerald-400">Private Video</p><p class="text-slate-400">Processed on your device</p></div>
+          <div><p class="text-lg font-bold text-sky-400">Injury Safe</p><p class="text-slate-400">Joint-aware exercise filter</p></div>
+        </div>
+      </div>
+
+      <!-- Clean Sample Workout Preview Card -->
+      <div class="rounded-2xl bg-slate-900 border border-slate-800 p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div>
+            <span class="text-xs font-semibold text-sky-400 uppercase">Sample Daily Routine</span>
+            <h2 class="text-lg font-bold text-white mt-0.5">Full-Body Strength Session</h2>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300">30 mins</span>
+        </div>
+
+        <div class="space-y-2.5 text-sm">
+          <div class="p-3.5 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-white">Bodyweight Squat</p>
+              <p class="text-xs text-slate-400">3 sets × 12 reps • Quads &amp; Glutes</p>
+            </div>
+            <span class="text-xs font-semibold text-emerald-400">Included</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-white">Push-up (Standard or Knee)</p>
+              <p class="text-xs text-slate-400">3 sets × 10 reps • Chest &amp; Triceps</p>
+            </div>
+            <span class="text-xs font-semibold text-emerald-400">Included</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-white">Forearm Plank</p>
+              <p class="text-xs text-slate-400">3 sets × 30 sec hold • Core</p>
+            </div>
+            <span class="text-xs font-semibold text-emerald-400">Included</span>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs">
+          <span class="text-slate-400">Last Form Evaluation Score</span>
+          <strong class="text-emerald-400 text-sm">94 / 100</strong>
+        </div>
+      </div>
     </main>
+
+    <footer class="border-t border-slate-800 py-4 px-4 text-center text-xs text-slate-400">
+      Smart Gym provides general fitness guidance and is not medical software.
+    </footer>
   </div>
 
+  <!-- ===================================================================== -->
+  <!-- 2. ATHLETE / INDIVIDUAL LOGIN & REGISTRATION GATEWAY                  -->
+  <!-- ===================================================================== -->
   <div id="auth-page" class="hidden min-h-screen flex items-center justify-center p-4 bg-slate-950">
-    <div class="max-w-lg w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
-      <div class="flex justify-between mb-5"><button onclick="openLandingPage()" class="text-xs text-slate-400">← Landing</button><span class="text-xs text-emerald-400">Athlete Portal</span></div>
-      <div class="flex p-1 rounded-2xl bg-slate-950 mb-5"><button id="tab-btn-register" class="flex-1 py-3 rounded-xl bg-emerald-600 text-white text-sm font-bold">Register</button><button id="tab-btn-login" class="flex-1 py-3 rounded-xl text-slate-400 text-sm">Log In</button></div>
+    <div class="max-w-lg w-full bg-slate-900 border border-slate-800 rounded-2xl p-6">
+      <div class="flex justify-between mb-5"><button onclick="openLandingPage()" class="text-xs text-slate-400 hover:text-white">← Back to Home</button><span class="text-xs font-semibold text-emerald-400">Athlete Account</span></div>
+      <div class="flex p-1 rounded-xl bg-slate-950 mb-5"><button id="tab-btn-register" class="flex-1 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-bold">Register</button><button id="tab-btn-login" class="flex-1 py-2.5 rounded-lg text-slate-400 text-sm">Log In</button></div>
       <div id="auth-panel-register">
         <h2 class="text-xl font-bold mb-4">Create Athlete Profile</h2><p id="reg-error" class="hidden text-xs text-rose-300 mb-3"></p>
         <form id="form-athlete-register" class="space-y-3">
-          <div class="grid sm:grid-cols-2 gap-3"><input id="reg-name" required placeholder="Athlete Name" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"><input id="reg-email" type="email" required placeholder="Email" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"></div>
-          <div class="grid sm:grid-cols-2 gap-3"><input id="reg-password" type="password" required minlength="6" placeholder="Password" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"><input id="reg-age" type="number" min="16" max="100" value="23" required class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"></div>
-          <div class="grid grid-cols-2 gap-2"><button type="button" data-reg-gender="male" class="py-3 rounded-xl border-2 border-emerald-400 bg-emerald-950/50">♂ Male</button><button type="button" data-reg-gender="female" class="py-3 rounded-xl border border-slate-700">♀ Female</button></div>
-          <div class="grid sm:grid-cols-2 gap-3"><div class="flex"><input id="reg-height" type="number" value="178" step="0.1" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3"><select id="reg-height-unit" class="bg-slate-800 border border-slate-700 rounded-xl px-2"><option value="cm">cm</option><option value="ft">ft</option></select></div><div class="flex"><input id="reg-weight" type="number" value="70" step="0.1" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3"><select id="reg-weight-unit" class="bg-slate-800 border border-slate-700 rounded-xl px-2"><option value="kg">kg</option><option value="lb">lb</option></select></div></div>
-          <div id="reg-live-metrics" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs flex justify-between"><span>Live BMI</span><span>Daily Calories</span></div>
-          <div class="grid sm:grid-cols-2 gap-3"><select id="reg-goal" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"><option value="build_strength">Build Muscle</option><option value="lose_weight">Lose Weight</option><option value="move_more">Move More</option><option value="stay_mobile">Stay Mobile</option><option value="recover">Recovery</option></select><select id="reg-equipment" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"><option value="none">No Equipment</option><option value="home_basics">Home Basics</option><option value="full_gym">Full Gym</option></select></div>
-          <button id="btn-reg-submit" type="submit" class="w-full py-3.5 rounded-2xl bg-emerald-500 text-slate-950 font-bold">Create Athlete Account →</button>
+          <div class="grid sm:grid-cols-2 gap-3"><input id="reg-name" required placeholder="Full Name" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm"><input id="reg-email" type="email" required placeholder="Email" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm"></div>
+          <div class="grid sm:grid-cols-2 gap-3"><input id="reg-password" type="password" required minlength="6" placeholder="Password (min 6 chars)" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm"><input id="reg-age" type="number" min="16" max="100" value="23" required title="Age" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm"></div>
+          <div class="grid grid-cols-2 gap-2"><button type="button" data-reg-gender="male" class="py-2.5 rounded-xl border-2 border-emerald-400 bg-emerald-950/50 text-sm font-semibold">Male</button><button type="button" data-reg-gender="female" class="py-2.5 rounded-xl border border-slate-700 text-sm font-semibold">Female</button></div>
+          <div class="grid sm:grid-cols-2 gap-3"><div class="flex gap-1"><input id="reg-height" type="number" value="178" step="0.1" title="Height" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm"><select id="reg-height-unit" title="Height unit" class="bg-slate-800 border border-slate-700 rounded-xl px-2 text-xs"><option value="cm">cm</option><option value="ft">ft</option></select></div><div class="flex gap-1"><input id="reg-weight" type="number" value="70" step="0.1" title="Weight" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm"><select id="reg-weight-unit" title="Weight unit" class="bg-slate-800 border border-slate-700 rounded-xl px-2 text-xs"><option value="kg">kg</option><option value="lb">lb</option></select></div></div>
+          <div id="reg-live-metrics" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs flex justify-between"><span>BMI Summary</span><span>Daily Calorie Estimate</span></div>
+          <div class="grid sm:grid-cols-2 gap-3"><select id="reg-goal" title="Primary goal" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm"><option value="build_strength">Build Muscle</option><option value="lose_weight">Lose Weight</option><option value="move_more">Move More</option><option value="stay_mobile">Stay Mobile</option><option value="recover">Recovery</option></select><select id="reg-equipment" title="Equipment" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm"><option value="none">No Equipment</option><option value="home_basics">Home Basics</option><option value="full_gym">Full Gym</option></select></div>
+          <button id="btn-reg-submit" type="submit" class="w-full py-3 rounded-xl bg-emerald-500 text-slate-950 font-bold text-sm">Create Account &amp; Continue</button>
         </form>
       </div>
-      <div id="auth-panel-login" class="hidden"><h2 class="text-xl font-bold mb-4">Welcome Back</h2><p id="login-error" class="hidden text-xs text-rose-300 mb-3"></p><form id="form-athlete-login" class="space-y-3"><input id="login-email" type="email" required placeholder="Email" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"><input id="login-password" type="password" required placeholder="Password" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3"><button id="btn-login-submit" type="submit" class="w-full py-3.5 rounded-2xl bg-sky-500 text-slate-950 font-bold">Sign In →</button></form><button id="btn-enter-demo-mode" class="w-full text-xs text-slate-400 mt-4 underline">Continue in Offline Guest Mode</button></div>
+      <div id="auth-panel-login" class="hidden"><h2 class="text-xl font-bold mb-4">Sign In</h2><p id="login-error" class="hidden text-xs text-rose-300 mb-3"></p><form id="form-athlete-login" class="space-y-3"><input id="login-email" type="email" required placeholder="Email" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm"><input id="login-password" type="password" required placeholder="Password" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm"><button id="btn-login-submit" type="submit" class="w-full py-3 rounded-xl bg-sky-500 text-white font-bold text-sm">Sign In</button></form><button id="btn-enter-demo-mode" class="w-full text-xs text-slate-400 mt-4 underline">Continue in Offline Guest Mode</button></div>
     </div>
   </div>
 
+  <!-- ===================================================================== -->
+  <!-- 3. MAIN APPLICATION WORKSPACE                                         -->
+  <!-- ===================================================================== -->
   <div id="main-app-shell" class="hidden min-h-screen flex flex-col">
-    <header class="border-b border-slate-800/90 bg-slate-900/95 sticky top-0 z-30 backdrop-blur">
+    <header class="border-b border-slate-800 bg-slate-900 sticky top-0 z-30">
       <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-        <button data-tab="today" class="flex items-center gap-2.5 text-left">
-          <span class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center"><span class="w-3 h-3 rounded-full bg-emerald-400"></span></span>
+        <button data-tab="today" class="flex items-center gap-2 text-left">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
           <span class="font-bold text-lg tracking-tight text-white">Smart Gym</span>
-          <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-emerald-400 border border-slate-700">Individual</span>
         </button>
         <div class="flex items-center gap-2.5 text-sm">
-          <button id="btn-reopen-welcome" type="button" class="hidden sm:inline-flex min-h-[40px] px-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-xs">Setup Wizard</button>
-          <button id="btn-header-profile" type="button" title="Open Athlete Profile & Settings" class="min-h-[40px] px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 flex items-center gap-2 text-slate-200 font-medium"><span id="header-user-avatar" class="w-6 h-6 rounded-full bg-emerald-600/30 border border-emerald-500/50 text-emerald-300 text-xs font-bold flex items-center justify-center">A</span><span id="header-user-name">Athlete</span><span id="header-sync-badge" class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">Guest</span></button>
-          <button id="btn-header-auth" type="button" class="min-h-[40px] px-3.5 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 font-medium border border-emerald-500/40">Sync / Sign In</button>
+          <button id="btn-reopen-welcome" type="button" class="hidden sm:inline-flex min-h-[38px] px-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-xs">Setup Wizard</button>
+          <button id="btn-header-profile" type="button" title="Open Athlete Profile & Settings" class="min-h-[38px] px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center gap-2 text-slate-200 font-medium"><span id="header-user-avatar" class="w-6 h-6 rounded-full bg-emerald-600/30 border border-emerald-500/50 text-emerald-300 text-xs font-bold flex items-center justify-center">A</span><span id="header-user-name">Athlete</span><span id="header-sync-badge" class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-700 text-slate-300">Guest</span></button>
+          <button id="btn-header-auth" type="button" class="min-h-[38px] px-3.5 py-1 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-medium text-xs">Sync / Sign In</button>
         </div>
       </div>
 
       <nav class="max-w-5xl mx-auto px-4 pb-2.5 flex gap-1.5 overflow-x-auto text-sm font-medium">
-        <button data-tab="today" class="min-h-[40px] px-4 py-1.5 rounded-xl bg-emerald-600 text-white whitespace-nowrap">Today</button>
-        <button data-tab="fitwithai" class="min-h-[40px] px-4 py-1.5 rounded-xl text-sky-300 hover:bg-slate-800 font-semibold whitespace-nowrap">✨ fitwithAI</button>
-        <button data-tab="coach" class="min-h-[40px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Coach</button>
-        <button data-tab="prescription" class="min-h-[40px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Prescription</button>
-        <button data-tab="plan" class="min-h-[40px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Monthly Plan</button>
-        <button data-tab="library" class="min-h-[40px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Library</button>
-        <button data-tab="progress" class="min-h-[40px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Progress</button>
-        <button data-tab="profile" class="min-h-[40px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Athlete &amp; Safety</button>
+        <button data-tab="today" class="min-h-[38px] px-4 py-1.5 rounded-xl bg-emerald-600 text-white whitespace-nowrap">Today</button>
+        <button data-tab="fitwithai" class="min-h-[38px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">FitWithAI</button>
+        <button data-tab="coach" class="min-h-[38px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Coach</button>
+        <button data-tab="prescription" class="min-h-[38px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Prescription</button>
+        <button data-tab="plan" class="min-h-[38px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Monthly Plan</button>
+        <button data-tab="library" class="min-h-[38px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Library</button>
+        <button data-tab="progress" class="min-h-[38px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Progress</button>
+        <button data-tab="profile" class="min-h-[38px] px-4 py-1.5 rounded-xl text-slate-300 hover:bg-slate-800 whitespace-nowrap">Athlete &amp; Safety</button>
       </nav>
     </header>
 
     <main class="max-w-5xl w-full mx-auto px-4 py-6 flex-1">
       <section id="tab-today" class="tab-panel"><div id="today-content"></div></section>
-      <!-- FITWITHAI TAB -->
-      <section id="tab-fitwithai" class="tab-panel hidden">
-        <div id="fitwithai-root"></div>
-      </section>
+      <section id="tab-fitwithai" class="tab-panel hidden"><div id="fitwithai-root"></div></section>
       <section id="tab-plan" class="tab-panel hidden"><div id="plan-content"></div></section>
 
       <section id="tab-coach" class="tab-panel hidden">
-        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
           <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <div><h2 class="text-xl font-bold">AI Form Coach</h2><p class="text-xs text-slate-400">Pose tracking runs locally in your browser. Video is never uploaded to the server.</p></div>
-            <select id="coach-exercise-select" title="Coach exercise" aria-label="Coach exercise" class="min-h-[44px] bg-slate-800 border border-slate-700 rounded-xl px-3.5 text-sm"></select>
+            <div><h2 class="text-xl font-bold">Form Coach</h2><p class="text-xs text-slate-400">Pose tracking runs locally in your browser. Video is never uploaded to the server.</p></div>
+            <select id="coach-exercise-select" title="Coach exercise" aria-label="Coach exercise" class="min-h-[42px] bg-slate-800 border border-slate-700 rounded-xl px-3.5 text-sm"></select>
           </div>
 
           <div class="grid sm:grid-cols-2 gap-3 mb-4">
-            <button type="button" id="btn-mode-live" class="min-h-[64px] p-3.5 rounded-2xl bg-emerald-600/15 border-2 border-emerald-500 text-left"><div class="flex justify-between"><span class="font-bold text-sm">1. Live Camera</span><span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">Real-Time</span></div><p class="text-xs text-slate-300 mt-1">Use your webcam for live rep counting and cues.</p></button>
-            <button type="button" id="btn-mode-upload" class="min-h-[64px] p-3.5 rounded-2xl bg-slate-800/70 border border-slate-700 text-left"><div class="flex justify-between"><span class="font-bold text-sm">2. Manual Video Upload</span><span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300">Recorded Clip</span></div><p class="text-xs text-slate-400 mt-1">Analyze an MP4, WebM, or MOV recording locally.</p></button>
+            <button type="button" id="btn-mode-live" class="min-h-[60px] p-3.5 rounded-xl bg-emerald-600/15 border-2 border-emerald-500 text-left"><div class="flex justify-between"><span class="font-bold text-sm">1. Live Camera</span><span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Real-Time</span></div><p class="text-xs text-slate-300 mt-1">Use your webcam for live rep counting and posture tips.</p></button>
+            <button type="button" id="btn-mode-upload" class="min-h-[60px] p-3.5 rounded-xl bg-slate-800 border border-slate-700 text-left"><div class="flex justify-between"><span class="font-bold text-sm">2. Manual Video Upload</span><span class="text-[10px] px-2 py-0.5 rounded bg-sky-500/20 text-sky-300">Recorded Clip</span></div><p class="text-xs text-slate-400 mt-1">Analyze an MP4, WebM, or MOV recording locally.</p></button>
           </div>
 
           <p id="coach-setup-guide" class="text-xs text-emerald-300 bg-emerald-950/50 border border-emerald-800/60 px-3 py-2 rounded-xl mb-4">Camera setup: Side or 45° angle, 2 meters away, full body visible</p>
 
           <div id="panel-coach-live">
             <div id="coach-start-controls" class="space-y-3 mb-4">
-              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/70 border border-slate-700 text-sm cursor-pointer"><input id="coach-consent-check" type="checkbox" class="w-5 h-5 accent-emerald-500"><span>I consent to on-device camera pose tracking.</span></label>
-              <button id="btn-coach-check" type="button" class="min-h-[48px] px-6 py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm">1. Start Camera &amp; Run Setup Check</button>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800 border border-slate-700 text-sm cursor-pointer"><input id="coach-consent-check" type="checkbox" class="w-4 h-4 accent-emerald-500"><span>I consent to on-device camera pose tracking.</span></label>
+              <button id="btn-coach-check" type="button" class="min-h-[44px] px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm">1. Start Camera &amp; Run Setup Check</button>
             </div>
-            <div id="coach-active-controls" class="hidden space-y-3 mb-4"><div id="coach-setup-status" class="text-sm px-3.5 py-2.5 rounded-xl bg-slate-800">Initializing camera...</div><div class="flex flex-wrap gap-2.5"><button id="btn-coach-begin-set" type="button" disabled class="min-h-[48px] px-5 rounded-xl bg-emerald-600 disabled:opacity-40 font-bold text-sm">2. Begin Rep Counting</button><button id="btn-coach-finish" type="button" class="min-h-[48px] px-5 rounded-xl bg-sky-600 font-bold text-sm">Finish &amp; Save Set</button><button id="btn-coach-stop" type="button" class="min-h-[48px] px-5 rounded-xl bg-rose-600 font-bold text-sm">STOP</button></div></div>
+            <div id="coach-active-controls" class="hidden space-y-3 mb-4"><div id="coach-setup-status" class="text-sm px-3.5 py-2.5 rounded-xl bg-slate-800">Initializing camera...</div><div class="flex flex-wrap gap-2.5"><button id="btn-coach-begin-set" type="button" disabled class="min-h-[44px] px-5 rounded-xl bg-emerald-600 disabled:opacity-40 font-bold text-sm">2. Begin Rep Counting</button><button id="btn-coach-finish" type="button" class="min-h-[44px] px-5 rounded-xl bg-sky-600 font-bold text-sm">Finish &amp; Save Set</button><button id="btn-coach-stop" type="button" class="min-h-[44px] px-5 rounded-xl bg-rose-600 font-bold text-sm">STOP</button></div></div>
           </div>
 
           <div id="panel-coach-upload" class="hidden space-y-3 mb-4">
-            <div class="p-4 rounded-2xl bg-slate-800/70 border border-dashed border-slate-600 space-y-3">
-              <div class="flex flex-wrap items-center justify-between gap-3"><div><label for="coach-video-file" class="block text-sm font-semibold">Choose Workout Video File</label><p class="text-xs text-slate-400">Processed locally—never sent to a server.</p></div><select id="coach-upload-speed" title="Video playback speed" class="min-h-[40px] bg-slate-900 border border-slate-700 rounded-xl px-3 text-xs"><option value="1">1.0x Normal</option><option value="0.75">0.75x Slow</option></select></div>
-              <input id="coach-video-file" type="file" accept="video/mp4,video/webm,video/quicktime,video/*" class="block w-full text-xs text-slate-300 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-700 file:text-white">
-              <div class="flex flex-wrap gap-2.5"><button id="btn-upload-analyze" type="button" class="min-h-[46px] px-5 rounded-xl bg-sky-600 text-white font-bold text-sm">Analyze Uploaded Video</button><button id="btn-upload-finish" type="button" class="hidden min-h-[46px] px-5 rounded-xl bg-emerald-600 text-white font-bold text-sm">Finish &amp; Save Report</button><button id="btn-upload-stop" type="button" class="hidden min-h-[46px] px-4 rounded-xl bg-rose-600 text-white font-bold text-sm">Cancel</button></div>
+            <div class="p-4 rounded-xl bg-slate-800 border border-dashed border-slate-600 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-3"><div><label for="coach-video-file" class="block text-sm font-semibold">Choose Workout Video File</label><p class="text-xs text-slate-400">Processed locally—never sent to a server.</p></div><select id="coach-upload-speed" title="Video playback speed" class="min-h-[38px] bg-slate-900 border border-slate-700 rounded-xl px-3 text-xs"><option value="1">1.0x Normal</option><option value="0.75">0.75x Slow</option></select></div>
+              <input id="coach-video-file" type="file" accept="video/mp4,video/webm,video/quicktime,video/*" class="block w-full text-xs text-slate-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-700 file:text-white">
+              <div class="flex flex-wrap gap-2.5"><button id="btn-upload-analyze" type="button" class="min-h-[44px] px-5 rounded-xl bg-sky-600 text-white font-bold text-sm">Analyze Uploaded Video</button><button id="btn-upload-finish" type="button" class="hidden min-h-[44px] px-5 rounded-xl bg-emerald-600 text-white font-bold text-sm">Finish &amp; Save Report</button><button id="btn-upload-stop" type="button" class="hidden min-h-[44px] px-4 rounded-xl bg-rose-600 text-white font-bold text-sm">Cancel</button></div>
             </div>
           </div>
 
-          <div class="relative max-w-xl mx-auto rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 aspect-video">
+          <div class="relative max-w-xl mx-auto rounded-xl overflow-hidden bg-slate-950 border border-slate-800 aspect-video">
             <video id="coach-video" class="w-full h-full object-contain bg-black" muted></video>
             <canvas id="coach-canvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
-            <div class="absolute top-3 left-3 right-3 flex items-center justify-between bg-slate-950/85 px-4 py-2 rounded-xl border border-slate-800"><div><span class="text-[11px] text-slate-400 block">Reps / Secs</span><span id="coach-rep-count" class="text-xl font-bold text-emerald-400">0</span></div><p id="coach-live-cue" class="text-xs sm:text-sm font-medium text-center px-2">Ready when you are</p><div class="text-right"><span class="text-[11px] text-slate-400 block">Last Rep</span><span id="coach-last-score" class="text-base font-bold text-sky-400">—</span></div></div>
+            <div class="absolute top-3 left-3 right-3 flex items-center justify-between bg-slate-950/90 px-4 py-2 rounded-xl border border-slate-800"><div><span class="text-[11px] text-slate-400 block">Reps / Secs</span><span id="coach-rep-count" class="text-xl font-bold text-emerald-400">0</span></div><p id="coach-live-cue" class="text-xs sm:text-sm font-medium text-center px-2">Ready when you are</p><div class="text-right"><span class="text-[11px] text-slate-400 block">Last Rep</span><span id="coach-last-score" class="text-base font-bold text-sky-400">—</span></div></div>
           </div>
-          <div id="coach-report-box" class="hidden mt-4 p-4 rounded-xl bg-slate-800/90 border border-emerald-600/50"></div>
+          <div id="coach-report-box" class="hidden mt-4 p-4 rounded-xl bg-slate-800 border border-emerald-600/50"></div>
         </div>
       </section>
 
       <section id="tab-prescription" class="tab-panel hidden space-y-5">
-        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 sm:p-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
           <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
             <div><span class="text-xs uppercase tracking-wider text-emerald-400 font-semibold">Consent-Based Guidance</span><h2 class="text-xl font-bold mt-0.5">Prescription &amp; Physio Note Analyzer</h2><p class="text-xs text-slate-400 mt-1">Upload or paste doctor recommendations and match them with verified exercise instructions and demos.</p></div>
-            <span class="text-[11px] px-2.5 py-1 rounded-full bg-amber-950/80 text-amber-300 border border-amber-600/40">Not Medical Software</span>
+            <span class="text-[11px] px-2.5 py-1 rounded-lg bg-amber-950/80 text-amber-300 border border-amber-600/40">Not Medical Software</span>
           </div>
 
           <div class="mb-4"><span class="text-[11px] text-slate-400 block mb-1.5">Quick test examples:</span><div class="flex flex-wrap gap-2 text-xs">
@@ -140,15 +409,15 @@
 
           <form id="form-prescription-analyze" class="space-y-4">
             <div class="grid md:grid-cols-2 gap-4">
-              <div class="p-4 rounded-2xl bg-slate-800/60 border border-dashed border-slate-600 space-y-3"><div><label for="rx-file-input" class="block text-sm font-semibold">1. Upload Prescription</label><p class="text-xs text-slate-400 mt-0.5">Image, PDF, or TXT file.</p></div><input id="rx-file-input" type="file" accept="image/*,.pdf,.txt" class="block w-full text-xs file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-700 file:text-white"><div id="rx-image-preview-wrap" class="hidden"><img id="rx-image-preview" alt="Prescription preview" class="max-h-36 rounded-xl border border-slate-700 object-contain bg-slate-950 p-1"></div></div>
-              <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700 space-y-2"><label for="rx-text-input" class="block text-sm font-semibold">2. Prescription Notes</label><textarea id="rx-text-input" rows="4" placeholder="Paste doctor or physiotherapist recommendations..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm"></textarea></div>
+              <div class="p-4 rounded-xl bg-slate-800 border border-dashed border-slate-600 space-y-3"><div><label for="rx-file-input" class="block text-sm font-semibold">1. Upload Prescription</label><p class="text-xs text-slate-400 mt-0.5">Image, PDF, or TXT file.</p></div><input id="rx-file-input" type="file" accept="image/*,.pdf,.txt" class="block w-full text-xs file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-700 file:text-white"><div id="rx-image-preview-wrap" class="hidden"><img id="rx-image-preview" alt="Prescription preview" class="max-h-36 rounded-xl border border-slate-700 object-contain bg-slate-950 p-1"></div></div>
+              <div class="p-4 rounded-xl bg-slate-800 border border-slate-700 space-y-2"><label for="rx-text-input" class="block text-sm font-semibold">2. Prescription Notes</label><textarea id="rx-text-input" rows="4" placeholder="Paste doctor or physiotherapist recommendations..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm"></textarea></div>
             </div>
-            <label class="flex items-start gap-3 p-3.5 rounded-xl bg-slate-800/80 border border-slate-700 text-xs cursor-pointer"><input id="rx-consent-check" type="checkbox" required class="w-4 h-4 mt-0.5 accent-emerald-500"><span><strong>Explicit Consent:</strong> I consent to analyzing this note for library exercise matches. This is fitness guidance, not medical diagnosis.</span></label>
-            <div class="flex flex-wrap gap-3"><button type="submit" id="btn-rx-submit" class="min-h-[48px] px-6 rounded-xl bg-emerald-600 text-white font-bold text-sm">Analyze Prescription &amp; Match Exercises</button><button type="button" id="btn-rx-clear" class="min-h-[48px] px-4 rounded-xl bg-slate-800 text-slate-300 text-sm font-semibold">Clear</button></div>
+            <label class="flex items-start gap-3 p-3.5 rounded-xl bg-slate-800 border border-slate-700 text-xs cursor-pointer"><input id="rx-consent-check" type="checkbox" required class="w-4 h-4 mt-0.5 accent-emerald-500"><span><strong>Explicit Consent:</strong> I consent to analyzing this note for library exercise matches. This is fitness guidance, not medical diagnosis.</span></label>
+            <div class="flex flex-wrap gap-3"><button type="submit" id="btn-rx-submit" class="min-h-[44px] px-6 rounded-xl bg-emerald-600 text-white font-bold text-sm">Analyze Prescription &amp; Match Exercises</button><button type="button" id="btn-rx-clear" class="min-h-[44px] px-4 rounded-xl bg-slate-800 text-slate-300 text-sm font-semibold">Clear</button></div>
           </form>
         </div>
         <div id="rx-results-container" class="hidden space-y-5"></div>
-        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5"><h3 class="text-base font-bold mb-3">Saved Prescription Analyses</h3><div id="rx-history-list" class="space-y-2.5 text-sm"></div></div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5"><h3 class="text-base font-bold mb-3">Saved Prescription Analyses</h3><div id="rx-history-list" class="space-y-2.5 text-sm"></div></div>
       </section>
 
       <section id="tab-library" class="tab-panel hidden">
@@ -171,18 +440,18 @@
       </section>
 
       <section id="tab-profile" class="tab-panel hidden space-y-5">
-        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/40 border border-slate-800 rounded-3xl p-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-              <div id="prof-hero-avatar" class="w-16 h-16 rounded-2xl bg-emerald-600/25 border-2 border-emerald-500/60 text-emerald-300 text-2xl font-extrabold flex items-center justify-center">A</div>
+              <div id="prof-hero-avatar" class="w-14 h-14 rounded-2xl bg-emerald-600/25 border border-emerald-500/60 text-emerald-300 text-xl font-bold flex items-center justify-center">A</div>
               <div>
-                <div class="flex flex-wrap items-center gap-2"><h1 id="prof-hero-name" class="text-2xl font-extrabold">Athlete</h1><span id="prof-hero-status" class="text-xs px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-600/40">Guest Mode</span><span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-emerald-400 border border-slate-700">Free Plan</span></div>
+                <div class="flex flex-wrap items-center gap-2"><h1 id="prof-hero-name" class="text-xl font-bold">Athlete</h1><span id="prof-hero-status" class="text-xs px-2.5 py-0.5 rounded-lg bg-amber-950 text-amber-300 border border-amber-600/40">Guest Mode</span><span class="text-xs px-2.5 py-0.5 rounded-lg bg-slate-800 text-emerald-400 border border-slate-700">Free Plan</span></div>
                 <p id="prof-hero-meta" class="text-xs text-slate-400 mt-1">guest@smartgym.local • Units: KG • Time Zone: UTC</p>
               </div>
             </div>
-            <div class="flex flex-wrap gap-2"><button id="btn-prof-wizard" type="button" class="min-h-[42px] px-4 rounded-xl bg-slate-800 text-xs font-semibold border border-slate-700">Run Guided Setup</button><button id="btn-prof-auth-action" type="button" class="min-h-[42px] px-4 rounded-xl bg-emerald-600 text-white text-xs font-bold">Connect Account</button></div>
+            <div class="flex flex-wrap gap-2"><button id="btn-prof-wizard" type="button" class="min-h-[40px] px-4 rounded-xl bg-slate-800 text-xs font-semibold border border-slate-700">Run Guided Setup</button><button id="btn-prof-auth-action" type="button" class="min-h-[40px] px-4 rounded-xl bg-emerald-600 text-white text-xs font-bold">Connect Account</button></div>
           </div>
-          <details class="mt-4 pt-3 border-t border-slate-800 text-xs"><summary class="cursor-pointer font-semibold text-emerald-400">Compare Free vs. Paid Individual Plan Features</summary><div class="grid sm:grid-cols-2 gap-3 mt-3"><div class="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800"><p class="font-bold mb-1">Free Plan (Active)</p><ul class="space-y-1 text-slate-400 list-disc pl-4"><li>Exercise library and demos</li><li>Today, rest timer, and workout logging</li><li>Starter live camera coach</li></ul></div><div class="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-700/40"><p class="font-bold text-emerald-300 mb-1">Paid Plan (Coming Soon)</p><ul class="space-y-1 text-slate-300 list-disc pl-4"><li>Unlimited plan rebuilds</li><li>Unlimited coach sessions</li><li>Advanced exports and sync</li></ul></div></div></details>
+          <details class="mt-4 pt-3 border-t border-slate-800 text-xs"><summary class="cursor-pointer font-semibold text-emerald-400">Compare Free vs. Paid Individual Plan Features</summary><div class="grid sm:grid-cols-2 gap-3 mt-3"><div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800"><p class="font-bold mb-1">Free Plan (Active)</p><ul class="space-y-1 text-slate-400 list-disc pl-4"><li>Exercise library and demos</li><li>Today, rest timer, and workout logging</li><li>Starter live camera coach</li></ul></div><div class="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-700/40"><p class="font-bold text-emerald-300 mb-1">Paid Plan (Coming Soon)</p><ul class="space-y-1 text-slate-300 list-disc pl-4"><li>Unlimited plan rebuilds</li><li>Unlimited coach sessions</li><li>Advanced exports and sync</li></ul></div></div></details>
         </div>
 
         <div class="grid lg:grid-cols-2 gap-5">
@@ -192,15 +461,15 @@
             <div class="grid sm:grid-cols-2 gap-3"><div><label class="text-xs text-slate-400">Experience</label><select id="prof-exp" title="Experience" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 text-sm"><option value="new">New</option><option value="some">Some Experience</option><option value="experienced">Experienced</option></select></div><div><label class="text-xs text-slate-400">Equipment</label><select id="prof-equip" title="Equipment" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 text-sm"><option value="none">None</option><option value="home_basics">Home Basics</option><option value="full_gym">Full Gym</option></select></div></div>
             <div class="grid grid-cols-3 gap-2.5"><div><label class="text-xs text-slate-400">Days</label><select id="prof-days" title="Days per week" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-2 text-sm"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div><div><label class="text-xs text-slate-400">Minutes</label><select id="prof-mins" title="Minutes per session" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-2 text-sm"><option value="15">15</option><option value="25">25</option><option value="40">40</option><option value="60">60</option></select></div><div><label class="text-xs text-slate-400">Units</label><select id="prof-units" title="Weight units" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-2 text-sm"><option value="kg">kg</option><option value="lb">lb</option></select></div></div>
             <div class="grid sm:grid-cols-2 gap-3"><div><label class="text-xs text-slate-400">Language</label><select id="prof-lang" title="Language" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 text-sm"><option value="en">English</option><option value="bn">বাংলা</option></select></div><div><label class="text-xs text-slate-400">Time Zone</label><input id="prof-timezone" type="text" title="Time zone" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 text-xs"></div></div>
-            <button type="submit" class="w-full min-h-[46px] rounded-xl bg-emerald-600 font-bold text-sm">Save Preferences &amp; Refresh Plan</button>
+            <button type="submit" class="w-full min-h-[44px] rounded-xl bg-emerald-600 font-bold text-sm">Save Preferences &amp; Refresh Plan</button>
           </form>
 
           <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
             <div class="flex items-center justify-between"><h2 class="text-lg font-bold">Health Screening &amp; Injuries</h2><button id="btn-retake-screening" type="button" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-emerald-400 border border-slate-700">Retake PAR-Q+</button></div>
-            <div id="prof-screening-banner" class="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700 text-xs"></div>
+            <div id="prof-screening-banner" class="p-3.5 rounded-xl bg-slate-800 border border-slate-700 text-xs"></div>
             <p class="text-xs font-medium">Protected Joints &amp; Limitations</p>
-            <div id="prof-limitations-grid" class="grid grid-cols-2 gap-2.5 text-xs"><label class="min-h-[44px] px-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center gap-2"><input type="checkbox" value="knee" class="prof-lim-check accent-emerald-500">Knee</label><label class="min-h-[44px] px-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center gap-2"><input type="checkbox" value="lower_back" class="prof-lim-check accent-emerald-500">Lower Back</label><label class="min-h-[44px] px-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center gap-2"><input type="checkbox" value="shoulder" class="prof-lim-check accent-emerald-500">Shoulder</label><label class="min-h-[44px] px-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center gap-2"><input type="checkbox" value="wrist" class="prof-lim-check accent-emerald-500">Wrist</label></div>
-            <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] text-slate-400">Flagged areas automatically exclude high-load exercises and reduce Live Coach depth targets.</div>
+            <div id="prof-limitations-grid" class="grid grid-cols-2 gap-2.5 text-xs"><label class="min-h-[42px] px-3 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" value="knee" class="prof-lim-check accent-emerald-500">Knee</label><label class="min-h-[42px] px-3 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" value="lower_back" class="prof-lim-check accent-emerald-500">Lower Back</label><label class="min-h-[42px] px-3 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" value="shoulder" class="prof-lim-check accent-emerald-500">Shoulder</label><label class="min-h-[42px] px-3 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" value="wrist" class="prof-lim-check accent-emerald-500">Wrist</label></div>
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-400">Flagged areas automatically exclude high-load exercises and reduce Live Coach depth targets.</div>
           </div>
 
           <form id="form-profile-reminders" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
@@ -211,22 +480,22 @@
 
           <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
             <h2 class="text-lg font-bold">Privacy Consents &amp; Data</h2>
-            <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/70 border border-slate-700 text-xs"><div><p class="font-semibold">On-Device Camera Tracking</p><p class="text-slate-400">Video never leaves your device.</p></div><input id="consent-camera" type="checkbox" class="w-5 h-5 accent-emerald-500"></label>
-            <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/70 border border-slate-700 text-xs"><div><p class="font-semibold">Health Screening Storage</p><p class="text-slate-400">Enables injury-aware plan filtering.</p></div><input id="consent-health" type="checkbox" class="w-5 h-5 accent-emerald-500"></label>
-            <div class="grid grid-cols-2 gap-2.5"><button id="btn-export-data" type="button" class="min-h-[44px] rounded-xl bg-sky-700 text-white text-xs font-bold">Export JSON</button><button id="btn-delete-account" type="button" class="min-h-[44px] rounded-xl bg-rose-700 text-white text-xs font-bold">Delete Account &amp; Data</button></div>
+            <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800 border border-slate-700 text-xs"><div><p class="font-semibold">On-Device Camera Tracking</p><p class="text-slate-400">Video never leaves your device.</p></div><input id="consent-camera" type="checkbox" class="w-4 h-4 accent-emerald-500"></label>
+            <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800 border border-slate-700 text-xs"><div><p class="font-semibold">Health Screening Storage</p><p class="text-slate-400">Enables injury-aware plan filtering.</p></div><input id="consent-health" type="checkbox" class="w-4 h-4 accent-emerald-500"></label>
+            <div class="grid grid-cols-2 gap-2.5"><button id="btn-export-data" type="button" class="min-h-[42px] rounded-xl bg-sky-700 text-white text-xs font-bold">Export JSON</button><button id="btn-delete-account" type="button" class="min-h-[42px] rounded-xl bg-rose-700 text-white text-xs font-bold">Delete Account &amp; Data</button></div>
           </div>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3"><h2 class="text-lg font-bold">Help &amp; Quick FAQ</h2><details class="p-3 rounded-xl bg-slate-800/60 border border-slate-800"><summary class="font-semibold cursor-pointer">Does the camera upload or record my video?</summary><p class="text-xs text-slate-400 mt-2">No. MediaPipe runs on your device. Only rep counts and numeric scores are stored.</p></details><details class="p-3 rounded-xl bg-slate-800/60 border border-slate-800"><summary class="font-semibold cursor-pointer">How are injuries protected?</summary><p class="text-xs text-slate-400 mt-2">Flagged body parts exclude high-load exercises and adjust Live Coach targets.</p></details><details class="p-3 rounded-xl bg-slate-800/60 border border-slate-800"><summary class="font-semibold cursor-pointer">Can I use the app offline?</summary><p class="text-xs text-slate-400 mt-2">Yes. Plans and logs stay locally and sync to the backend after login.</p></details></div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3"><h2 class="text-lg font-bold">Help &amp; Quick FAQ</h2><details class="p-3 rounded-xl bg-slate-800 border border-slate-800"><summary class="font-semibold cursor-pointer">Does the camera upload or record my video?</summary><p class="text-xs text-slate-400 mt-2">No. Pose tracking runs on your device. Only rep counts and numeric scores are stored.</p></details><details class="p-3 rounded-xl bg-slate-800 border border-slate-800"><summary class="font-semibold cursor-pointer">How are injuries protected?</summary><p class="text-xs text-slate-400 mt-2">Flagged body parts exclude high-load exercises and adjust Form Coach targets.</p></details><details class="p-3 rounded-xl bg-slate-800 border border-slate-800"><summary class="font-semibold cursor-pointer">Can I use the app offline?</summary><p class="text-xs text-slate-400 mt-2">Yes. Plans and logs stay locally and sync to the backend after login.</p></details></div>
       </section>
     </main>
 
-    <footer class="border-t border-slate-800/80 py-4 px-4 text-center text-xs text-slate-400">
+    <footer class="border-t border-slate-800 py-4 px-4 text-center text-xs text-slate-400">
       Smart Gym is fitness guidance, <strong>not medical software</strong>. It does not diagnose or treat any condition.
     </footer>
 
-    <div id="onboarding-overlay" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 overflow-y-auto flex items-center justify-center p-4">
-      <div class="max-w-xl w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+    <div id="onboarding-overlay" class="hidden fixed inset-0 bg-slate-950/95 z-50 overflow-y-auto flex items-center justify-center p-4">
+      <div class="max-w-xl w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8">
         <div id="wizard-progress-header" class="hidden mb-6">
           <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
             <span id="wizard-step-label" class="font-semibold text-emerald-400">Step 1 of 4</span>
@@ -236,51 +505,51 @@
         </div>
 
         <div id="wizard-step-0" class="animate-step space-y-6">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs"><span>Individual-First Edition</span><span>•</span><span>Offline Ready</span></div>
-          <div><h1 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight">Train safely anywhere—with a plan built around you.</h1><p class="text-slate-300 text-sm sm:text-base mt-2.5 leading-relaxed">Tell Smart Gym your goal, equipment, and sensitive joints for a safe plan and private on-device camera coaching.</p></div>
-          <div class="grid sm:grid-cols-3 gap-3 text-xs"><div class="p-3.5 rounded-2xl bg-slate-800/70 border border-slate-700"><p class="font-bold mb-1">Safe Monthly Plan</p><p class="text-slate-400">Avoids movements that load flagged injuries.</p></div><div class="p-3.5 rounded-2xl bg-slate-800/70 border border-slate-700"><p class="font-bold mb-1">One-Tap Today</p><p class="text-slate-400">Set logging, rest timer, and safe swaps.</p></div><div class="p-3.5 rounded-2xl bg-slate-800/70 border border-slate-700"><p class="font-bold mb-1">Private Camera</p><p class="text-slate-400">Video stays on your device.</p></div></div>
-          <div class="space-y-3 pt-2"><button type="button" id="btn-welcome-start" class="w-full min-h-[52px] rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold">Personalize My Plan (2 Minutes)</button><div class="grid grid-cols-2 gap-2.5"><button type="button" id="btn-welcome-skip" class="min-h-[46px] rounded-xl bg-slate-800 text-slate-200 font-semibold border border-slate-700">Skip &amp; Try Demo Now</button><button type="button" id="btn-welcome-signin" class="min-h-[46px] rounded-xl bg-slate-800/60 text-emerald-400 font-semibold border border-slate-700">Sign In / Sync</button></div></div>
+          <span class="inline-block px-3 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs">Quick Setup • Offline Ready</span>
+          <div><h1 class="text-2xl sm:text-3xl font-bold text-white leading-tight">Train safely anywhere—with a plan built around you.</h1><p class="text-slate-300 text-sm mt-2.5 leading-relaxed">Tell Smart Gym your goal, equipment, and sensitive joints for a safe plan and private on-device form feedback.</p></div>
+          <div class="grid sm:grid-cols-3 gap-3 text-xs"><div class="p-3.5 rounded-xl bg-slate-800 border border-slate-700"><p class="font-bold mb-1">Safe Monthly Plan</p><p class="text-slate-400">Avoids movements that load flagged injuries.</p></div><div class="p-3.5 rounded-xl bg-slate-800 border border-slate-700"><p class="font-bold mb-1">One-Tap Today</p><p class="text-slate-400">Set logging, rest timer, and safe swaps.</p></div><div class="p-3.5 rounded-xl bg-slate-800 border border-slate-700"><p class="font-bold mb-1">Private Camera</p><p class="text-slate-400">Video stays on your device.</p></div></div>
+          <div class="space-y-3 pt-2"><button type="button" id="btn-welcome-start" class="w-full min-h-[48px] rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold">Personalize My Plan (2 Minutes)</button><div class="grid grid-cols-2 gap-2.5"><button type="button" id="btn-welcome-skip" class="min-h-[44px] rounded-xl bg-slate-800 text-slate-200 font-semibold border border-slate-700">Skip &amp; Try Demo Now</button><button type="button" id="btn-welcome-signin" class="min-h-[44px] rounded-xl bg-slate-800 text-emerald-400 font-semibold border border-slate-700">Sign In / Sync</button></div></div>
         </div>
 
         <div id="wizard-step-1" class="hidden animate-step space-y-5">
-          <div><h2 class="text-xl font-bold">What should we call you, and what's your main goal?</h2><p class="text-xs text-slate-400 mt-1">Editable anytime in Safety &amp; Profile.</p></div>
-          <div><label class="text-xs text-slate-300">First Name or Nickname</label><input id="wiz-name" type="text" placeholder="e.g. Abid" class="w-full min-h-[46px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3.5 text-sm"></div>
+          <div><h2 class="text-xl font-bold">What should we call you, and what's your main goal?</h2><p class="text-xs text-slate-400 mt-1">Editable anytime in Athlete &amp; Safety.</p></div>
+          <div><label class="text-xs text-slate-300">First Name or Nickname</label><input id="wiz-name" type="text" placeholder="e.g. Abid" class="w-full min-h-[44px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3.5 text-sm"></div>
           <div class="grid sm:grid-cols-2 gap-2.5" id="wiz-goal-cards">
-            <button type="button" data-value="build_strength" class="choice-card selected min-h-[56px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Build Strength</p><p class="text-xs text-slate-400">Progressive reps &amp; resistance</p></button>
-            <button type="button" data-value="lose_weight" class="choice-card min-h-[56px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Lose Weight</p><p class="text-xs text-slate-400">Higher-tempo sessions</p></button>
-            <button type="button" data-value="move_more" class="choice-card min-h-[56px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Move More</p><p class="text-xs text-slate-400">Daily energy &amp; habit</p></button>
-            <button type="button" data-value="stay_mobile" class="choice-card min-h-[56px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Stay Mobile</p><p class="text-xs text-slate-400">Joint control and posture</p></button>
-            <button type="button" data-value="recover" class="choice-card sm:col-span-2 min-h-[56px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Recover Gently</p><p class="text-xs text-slate-400">Low-impact movement</p></button>
+            <button type="button" data-value="build_strength" class="choice-card selected min-h-[54px] p-3.5 rounded-xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Build Strength</p><p class="text-xs text-slate-400">Progressive reps &amp; resistance</p></button>
+            <button type="button" data-value="lose_weight" class="choice-card min-h-[54px] p-3.5 rounded-xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Lose Weight</p><p class="text-xs text-slate-400">Higher-tempo sessions</p></button>
+            <button type="button" data-value="move_more" class="choice-card min-h-[54px] p-3.5 rounded-xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Move More</p><p class="text-xs text-slate-400">Daily energy &amp; habit</p></button>
+            <button type="button" data-value="stay_mobile" class="choice-card min-h-[54px] p-3.5 rounded-xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Stay Mobile</p><p class="text-xs text-slate-400">Joint control and posture</p></button>
+            <button type="button" data-value="recover" class="choice-card sm:col-span-2 min-h-[54px] p-3.5 rounded-xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Recover Gently</p><p class="text-xs text-slate-400">Low-impact movement</p></button>
           </div>
-          <div class="flex justify-between pt-2"><button type="button" data-wiz-prev="0" class="min-h-[46px] px-5 rounded-xl bg-slate-800 text-sm">Back</button><button type="button" data-wiz-next="2" class="min-h-[46px] px-6 rounded-xl bg-emerald-600 text-sm font-bold">Next: Experience &amp; Gear</button></div>
+          <div class="flex justify-between pt-2"><button type="button" data-wiz-prev="0" class="min-h-[44px] px-5 rounded-xl bg-slate-800 text-sm">Back</button><button type="button" data-wiz-next="2" class="min-h-[44px] px-6 rounded-xl bg-emerald-600 text-sm font-bold">Next: Experience &amp; Gear</button></div>
         </div>
 
         <div id="wizard-step-2" class="hidden animate-step space-y-5">
           <div><h2 class="text-xl font-bold">Your experience &amp; available equipment</h2><p class="text-xs text-slate-400 mt-1">Only matching exercises will enter your plan.</p></div>
-          <div class="grid grid-cols-3 gap-2.5" id="wiz-exp-cards"><button type="button" data-value="new" class="choice-card selected min-h-[56px] p-3 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">New</p><p class="text-[11px] text-slate-400">Starting fresh</p></button><button type="button" data-value="some" class="choice-card min-h-[56px] p-3 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Some</p><p class="text-[11px] text-slate-400">Know basics</p></button><button type="button" data-value="experienced" class="choice-card min-h-[56px] p-3 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Experienced</p><p class="text-[11px] text-slate-400">Train regularly</p></button></div>
-          <div class="space-y-2" id="wiz-equip-cards"><button type="button" data-value="none" class="choice-card selected w-full min-h-[54px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">No Equipment</p><p class="text-xs text-slate-400">Bodyweight, outdoors, or home</p></button><button type="button" data-value="home_basics" class="choice-card w-full min-h-[54px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Home Basics</p><p class="text-xs text-slate-400">Dumbbells, bands, mat, or chair</p></button><button type="button" data-value="full_gym" class="choice-card w-full min-h-[54px] p-3.5 rounded-2xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Full Gym</p><p class="text-xs text-slate-400">Barbells, benches, cables, and weights</p></button></div>
-          <div class="flex justify-between pt-2"><button type="button" data-wiz-prev="1" class="min-h-[46px] px-5 rounded-xl bg-slate-800 text-sm">Back</button><button type="button" data-wiz-next="3" class="min-h-[46px] px-6 rounded-xl bg-emerald-600 text-sm font-bold">Next: Schedule &amp; Units</button></div>
+          <div class="grid grid-cols-3 gap-2.5" id="wiz-exp-cards"><button type="button" data-value="new" class="choice-card selected min-h-[54px] p-3 rounded-xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">New</p><p class="text-[11px] text-slate-400">Starting fresh</p></button><button type="button" data-value="some" class="choice-card min-h-[54px] p-3 rounded-xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Some</p><p class="text-[11px] text-slate-400">Know basics</p></button><button type="button" data-value="experienced" class="choice-card min-h-[54px] p-3 rounded-xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Experienced</p><p class="text-[11px] text-slate-400">Train regularly</p></button></div>
+          <div class="space-y-2" id="wiz-equip-cards"><button type="button" data-value="none" class="choice-card selected w-full min-h-[52px] p-3.5 rounded-xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">No Equipment</p><p class="text-xs text-slate-400">Bodyweight, outdoors, or home</p></button><button type="button" data-value="home_basics" class="choice-card w-full min-h-[52px] p-3.5 rounded-xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Home Basics</p><p class="text-xs text-slate-400">Dumbbells, bands, mat, or chair</p></button><button type="button" data-value="full_gym" class="choice-card w-full min-h-[52px] p-3.5 rounded-xl bg-slate-800 border border-slate-700 text-left"><p class="font-bold text-sm">Full Gym</p><p class="text-xs text-slate-400">Barbells, benches, cables, and weights</p></button></div>
+          <div class="flex justify-between pt-2"><button type="button" data-wiz-prev="1" class="min-h-[44px] px-5 rounded-xl bg-slate-800 text-sm">Back</button><button type="button" data-wiz-next="3" class="min-h-[44px] px-6 rounded-xl bg-emerald-600 text-sm font-bold">Next: Schedule &amp; Units</button></div>
         </div>
 
         <div id="wizard-step-3" class="hidden animate-step space-y-5">
           <div><h2 class="text-xl font-bold">Your weekly rhythm &amp; preferences</h2><p class="text-xs text-slate-400 mt-1">Rest days and a lighter final week are included.</p></div>
-          <div class="grid grid-cols-2 gap-3"><div><label class="text-xs text-slate-300">Workouts / Week</label><select id="wiz-days" title="Workouts per week" aria-label="Workouts per week" class="w-full min-h-[46px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3"><option value="2">2 days</option><option value="3" selected>3 days</option><option value="4">4 days</option><option value="5">5 days</option></select></div><div><label class="text-xs text-slate-300">Minutes / Session</label><select id="wiz-minutes" title="Minutes per session" aria-label="Minutes per session" class="w-full min-h-[46px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3"><option value="15">15 minutes</option><option value="25" selected>25 minutes</option><option value="40">40 minutes</option><option value="60">60 minutes</option></select></div></div>
-          <div class="grid grid-cols-2 gap-3"><div><label class="text-xs text-slate-300">Weight Units</label><select id="wiz-units" title="Weight units" aria-label="Weight units" class="w-full min-h-[46px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3"><option value="kg" selected>Kilograms</option><option value="lb">Pounds</option></select></div><div><label class="text-xs text-slate-300">Language</label><select id="wiz-lang" title="Language" aria-label="Language" class="w-full min-h-[46px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3"><option value="en" selected>English</option><option value="bn">বাংলা</option></select></div></div>
-          <div><label class="text-xs text-slate-300" for="wiz-timezone">Time Zone (Auto-Detected)</label><input id="wiz-timezone" type="text" placeholder="UTC" title="Time zone" class="w-full min-h-[44px] mt-1.5 bg-slate-800/70 border border-slate-700 rounded-xl px-3.5 text-xs"></div>
-          <div class="flex justify-between pt-2"><button type="button" data-wiz-prev="2" class="min-h-[46px] px-5 rounded-xl bg-slate-800 text-sm">Back</button><button type="button" data-wiz-next="4" class="min-h-[46px] px-6 rounded-xl bg-emerald-600 text-sm font-bold">Next: Quick Safety Check</button></div>
+          <div class="grid grid-cols-2 gap-3"><div><label class="text-xs text-slate-300">Workouts / Week</label><select id="wiz-days" title="Workouts per week" aria-label="Workouts per week" class="w-full min-h-[44px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3"><option value="2">2 days</option><option value="3" selected>3 days</option><option value="4">4 days</option><option value="5">5 days</option></select></div><div><label class="text-xs text-slate-300">Minutes / Session</label><select id="wiz-minutes" title="Minutes per session" aria-label="Minutes per session" class="w-full min-h-[44px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3"><option value="15">15 minutes</option><option value="25" selected>25 minutes</option><option value="40">40 minutes</option><option value="60">60 minutes</option></select></div></div>
+          <div class="grid grid-cols-2 gap-3"><div><label class="text-xs text-slate-300">Weight Units</label><select id="wiz-units" title="Weight units" aria-label="Weight units" class="w-full min-h-[44px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3"><option value="kg" selected>Kilograms</option><option value="lb">Pounds</option></select></div><div><label class="text-xs text-slate-300">Language</label><select id="wiz-lang" title="Language" aria-label="Language" class="w-full min-h-[44px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3"><option value="en" selected>English</option><option value="bn">বাংলা</option></select></div></div>
+          <div><label class="text-xs text-slate-300" for="wiz-timezone">Time Zone (Auto-Detected)</label><input id="wiz-timezone" type="text" placeholder="UTC" title="Time zone" class="w-full min-h-[42px] mt-1.5 bg-slate-800 border border-slate-700 rounded-xl px-3.5 text-xs"></div>
+          <div class="flex justify-between pt-2"><button type="button" data-wiz-prev="2" class="min-h-[44px] px-5 rounded-xl bg-slate-800 text-sm">Back</button><button type="button" data-wiz-next="4" class="min-h-[44px] px-6 rounded-xl bg-emerald-600 text-sm font-bold">Next: Quick Safety Check</button></div>
         </div>
 
         <form id="form-wizard-complete" class="hidden animate-step space-y-4">
           <div><h2 class="text-xl font-bold">Quick Health &amp; Injury Safety Check</h2><p class="text-xs text-slate-400 mt-1">Any Yes keeps the plan gentle and advises a doctor check.</p></div>
           <div class="space-y-2 text-sm">
-            <label class="flex justify-between items-center p-3 rounded-xl bg-slate-800 border border-slate-700"><span>Chest pain during activity?</span><select name="q_chest" title="Chest pain during activity" class="min-h-[38px] bg-slate-900 rounded-lg px-2"><option value="no">No</option><option value="yes">Yes</option></select></label>
-            <label class="flex justify-between items-center p-3 rounded-xl bg-slate-800 border border-slate-700"><span>Lose balance from dizziness?</span><select name="q_dizzy" title="Dizziness concern" class="min-h-[38px] bg-slate-900 rounded-lg px-2"><option value="no">No</option><option value="yes">Yes</option></select></label>
-            <label class="flex justify-between items-center p-3 rounded-xl bg-slate-800 border border-slate-700"><span>Bone or joint issue worsened by movement?</span><select name="q_bone" title="Bone or joint concern" class="min-h-[38px] bg-slate-900 rounded-lg px-2"><option value="no">No</option><option value="yes">Yes</option></select></label>
-            <label class="flex justify-between items-center p-3 rounded-xl bg-slate-800 border border-slate-700"><span>Prescribed heart or blood pressure medication?</span><select name="q_meds" title="Medication concern" class="min-h-[38px] bg-slate-900 rounded-lg px-2"><option value="no">No</option><option value="yes">Yes</option></select></label>
+            <label class="flex justify-between items-center p-3 rounded-xl bg-slate-800 border border-slate-700"><span>Chest pain during activity?</span><select name="q_chest" title="Chest pain during activity" class="min-h-[36px] bg-slate-900 rounded-lg px-2"><option value="no">No</option><option value="yes">Yes</option></select></label>
+            <label class="flex justify-between items-center p-3 rounded-xl bg-slate-800 border border-slate-700"><span>Lose balance from dizziness?</span><select name="q_dizzy" title="Dizziness concern" class="min-h-[36px] bg-slate-900 rounded-lg px-2"><option value="no">No</option><option value="yes">Yes</option></select></label>
+            <label class="flex justify-between items-center p-3 rounded-xl bg-slate-800 border border-slate-700"><span>Bone or joint issue worsened by movement?</span><select name="q_bone" title="Bone or joint concern" class="min-h-[36px] bg-slate-900 rounded-lg px-2"><option value="no">No</option><option value="yes">Yes</option></select></label>
+            <label class="flex justify-between items-center p-3 rounded-xl bg-slate-800 border border-slate-700"><span>Prescribed heart or blood pressure medication?</span><select name="q_meds" title="Medication concern" class="min-h-[36px] bg-slate-900 rounded-lg px-2"><option value="no">No</option><option value="yes">Yes</option></select></label>
           </div>
-          <div><span class="text-xs text-slate-300 block mb-2">Sensitive areas to protect</span><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs"><label class="min-h-[44px] px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" name="limitations" value="knee" class="accent-emerald-500">Knee</label><label class="min-h-[44px] px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" name="limitations" value="lower_back" class="accent-emerald-500">Lower Back</label><label class="min-h-[44px] px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" name="limitations" value="shoulder" class="accent-emerald-500">Shoulder</label><label class="min-h-[44px] px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" name="limitations" value="wrist" class="accent-emerald-500">Wrist</label></div></div>
-          <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-800/50 text-xs text-slate-300"><input type="checkbox" required checked class="mt-0.5 accent-emerald-500"><span>I understand this provides fitness guidance, not medical care.</span></label>
-          <div class="flex justify-between pt-2"><button type="button" data-wiz-prev="3" class="min-h-[46px] px-5 rounded-xl bg-slate-800 text-sm">Back</button><button type="submit" class="min-h-[48px] px-6 rounded-xl bg-emerald-600 text-sm font-bold">Build My Plan &amp; Start</button></div>
+          <div><span class="text-xs text-slate-300 block mb-2">Sensitive areas to protect</span><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs"><label class="min-h-[42px] px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" name="limitations" value="knee" class="accent-emerald-500">Knee</label><label class="min-h-[42px] px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" name="limitations" value="lower_back" class="accent-emerald-500">Lower Back</label><label class="min-h-[42px] px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" name="limitations" value="shoulder" class="accent-emerald-500">Shoulder</label><label class="min-h-[42px] px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2"><input type="checkbox" name="limitations" value="wrist" class="accent-emerald-500">Wrist</label></div></div>
+          <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-800 text-xs text-slate-300"><input type="checkbox" required checked class="mt-0.5 accent-emerald-500"><span>I understand this provides fitness guidance, not medical care.</span></label>
+          <div class="flex justify-between pt-2"><button type="button" data-wiz-prev="3" class="min-h-[44px] px-5 rounded-xl bg-slate-800 text-sm">Back</button><button type="submit" class="min-h-[46px] px-6 rounded-xl bg-emerald-600 text-sm font-bold">Build My Plan &amp; Start</button></div>
         </form>
       </div>
     </div>
@@ -293,20 +562,20 @@
         </div>
         <p id="auth-error" class="hidden text-xs text-rose-400 bg-rose-950/60 p-2.5 rounded-xl"></p>
         <label class="block text-sm">Authentication mode
-          <select name="authMode" title="Authentication mode" aria-label="Authentication mode" class="w-full min-h-[44px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+          <select name="authMode" title="Authentication mode" aria-label="Authentication mode" class="w-full min-h-[42px] mt-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
             <option value="register">Create New Account</option>
             <option value="login">Sign In to Existing Account</option>
           </select>
         </label>
-        <input name="displayName" type="text" placeholder="Display name (for registration)" class="w-full min-h-[44px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
-        <input name="email" type="email" required placeholder="you@example.com" class="w-full min-h-[44px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
-        <input name="password" type="password" required minlength="6" placeholder="Password (min 6 characters)" class="w-full min-h-[44px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
-        <input name="birthYear" type="number" value="2000" min="1930" max="2010" placeholder="Birth year" title="Birth year" class="w-full min-h-[44px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
-        <button type="submit" class="w-full min-h-[46px] rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm">Continue</button>
+        <input name="displayName" type="text" placeholder="Display name (for registration)" class="w-full min-h-[42px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+        <input name="email" type="email" required placeholder="you@example.com" class="w-full min-h-[42px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+        <input name="password" type="password" required minlength="6" placeholder="Password (min 6 characters)" class="w-full min-h-[42px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+        <input name="birthYear" type="number" value="2000" min="1930" max="2010" placeholder="Birth year" title="Birth year" class="w-full min-h-[42px] bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+        <button type="submit" class="w-full min-h-[44px] rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm">Continue</button>
       </form>
     </div>
 
-    <script type="module" src="js/app.js?v=6"></script>
+    <script type="module" src="js/app.js?v=7"></script>
     <script>
       if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
     </script>

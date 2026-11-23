@@ -1,0 +1,198 @@
+/* ==========================================================================
+   SMART GYM — 60 / 30 / 10 THEME SYSTEM
+   60% Main:      Midnight Black (#0B0D12)
+   30% Secondary: Electric Blue  (#1E5EFF)
+   10% Accent:    Sunset Orange  (#FF7A1A / rgb(255, 122, 26))
+   ========================================================================== */
+
+:root {
+  --midnight-base: #0B0D12;
+  --midnight-surface: #121622;
+  --midnight-elevated: #181F30;
+  --electric-blue: #1E5EFF;
+  --electric-blue-bright: #3B82F6;
+  --electric-blue-tint: rgba(30, 94, 255, 0.16);
+  --electric-blue-border: rgba(59, 130, 246, 0.32);
+  --sunset-orange: #FF7A1A;
+  --sunset-orange-hover: #FF8F3D;
+  --sunset-orange-tint: rgba(255, 122, 26, 0.15);
+  --sunset-orange-border: rgba(255, 122, 26, 0.45);
+}
+
+/* 1. 60% MAIN — MIDNIGHT BLACK BACKGROUNDS & SURFACES */
+body,
+#landing-page,
+#auth-page,
+#main-app-shell {
+  background-color: var(--midnight-base) !important;
+  background-image: radial-gradient(circle at top right, rgba(30, 94, 255, 0.14), transparent 45%),
+                    radial-gradient(circle at bottom left, rgba(255, 122, 26, 0.08), transparent 40%) !important;
+  color: #F8FAFC;
+}
+
+header {
+  background-color: rgba(11, 13, 18, 0.92) !important;
+  border-bottom-color: var(--electric-blue-border) !important;
+}
+
+.bg-slate-950,
+.bg-slate-950\/70,
+.bg-slate-950\/80,
+.bg-slate-950\/85,
+.bg-slate-950\/95 {
+  background-color: var(--midnight-base) !important;
+}
+
+.bg-slate-900,
+.bg-slate-900\/70,
+.bg-slate-900\/80,
+.bg-slate-900\/90,
+.bg-slate-900\/95,
+.bg-\[\#070b1e\] {
+  background-color: var(--midnight-surface) !important;
+  border-color: var(--electric-blue-border) !important;
+}
+
+.bg-slate-800,
+.bg-slate-800\/50,
+.bg-slate-800\/60,
+.bg-slate-800\/70,
+.bg-slate-800\/80,
+.bg-slate-800\/90 {
+  background-color: var(--midnight-elevated) !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+}
+
+/* 2. 30% SECONDARY — ELECTRIC BLUE PANELS, BORDERS & SECONDARY ACTIONS */
+.border-slate-800,
+.border-slate-800\/80,
+.border-slate-800\/90,
+.border-slate-700,
+.border-slate-700\/80 {
+  border-color: var(--electric-blue-border) !important;
+}
+
+.bg-sky-600,
+.bg-sky-500,
+.bg-sky-700,
+.bg-indigo-600 {
+  background-color: var(--electric-blue) !important;
+  color: #FFFFFF !important;
+  border-color: var(--electric-blue-bright) !important;
+}
+
+.bg-sky-600:hover,
+.bg-sky-500:hover,
+.bg-sky-700:hover {
+  background-color: var(--electric-blue-bright) !important;
+}
+
+.bg-sky-950,
+.bg-sky-950\/30,
+.bg-sky-950\/40,
+.bg-sky-950\/50,
+.bg-sky-950\/70,
+.bg-sky-600\/15,
+.bg-sky-600\/25,
+.bg-sky-500\/15,
+.bg-sky-500\/20 {
+  background-color: var(--electric-blue-tint) !important;
+  border-color: var(--electric-blue-border) !important;
+}
+
+.text-sky-400,
+.text-sky-300,
+.text-sky-200 {
+  color: #60A5FA !important;
+}
+
+.border-sky-400,
+.border-sky-500,
+.border-sky-700\/50,
+.border-sky-800\/50 {
+  border-color: var(--electric-blue-bright) !important;
+}
+
+/* Hero & Intelligence Gradient Cards (Midnight Black -> Electric Blue) */
+.from-slate-900.to-emerald-950\/50,
+.from-sky-950\/50.to-slate-900,
+.from-emerald-950\/70.via-slate-900.to-sky-950\/60 {
+  background-image: linear-gradient(135deg, #121622 0%, rgba(30, 94, 255, 0.24) 100%) !important;
+  border-color: var(--electric-blue-border) !important;
+}
+
+/* 3. 10% ACCENT — SUNSET ORANGE (#FF7A1A) PRIMARY CTAs, ACTIVE TABS & HIGHLIGHTS */
+.bg-emerald-600,
+.bg-emerald-500 {
+  background-color: var(--sunset-orange) !important;
+  color: #0B0D12 !important;
+  font-weight: 800 !important;
+  border-color: var(--sunset-orange) !important;
+  box-shadow: 0 8px 22px -6px rgba(255, 122, 26, 0.45) !important;
+}
+
+.bg-emerald-600:hover,
+.bg-emerald-500:hover {
+  background-color: var(--sunset-orange-hover) !important;
+}
+
+.bg-emerald-600\/15,
+.bg-emerald-600\/20,
+.bg-emerald-600\/25,
+.bg-emerald-600\/30,
+.bg-emerald-500\/10,
+.bg-emerald-500\/15,
+.bg-emerald-500\/20,
+.bg-emerald-950,
+.bg-emerald-950\/50,
+.bg-emerald-950\/60,
+.bg-emerald-950\/70,
+.bg-emerald-950\/90 {
+  background-color: var(--sunset-orange-tint) !important;
+  border-color: var(--sunset-orange-border) !important;
+}
+
+.text-emerald-400,
+.text-emerald-300,
+.text-emerald-200 {
+  color: var(--sunset-orange) !important;
+}
+
+.border-emerald-500,
+.border-emerald-400,
+.border-emerald-500\/30,
+.border-emerald-500\/40,
+.border-emerald-500\/50,
+.border-emerald-600\/40,
+.border-emerald-600\/50 {
+  border-color: var(--sunset-orange) !important;
+}
+
+/* Selected Choice Cards (Onboarding & fitwithAI) */
+.choice-card.selected {
+  border-color: var(--sunset-orange) !important;
+  background-color: var(--sunset-orange-tint) !important;
+  box-shadow: 0 0 0 1px var(--sunset-orange) !important;
+}
+
+/* Progress Bars & Gradients (Electric Blue -> Sunset Orange) */
+.from-emerald-500.to-sky-400,
+.from-emerald-400.to-sky-400 {
+  background-image: linear-gradient(90deg, var(--electric-blue-bright) 0%, var(--sunset-orange) 100%) !important;
+}
+
+/* Form Inputs Focus Ring */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--sunset-orange) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(255, 122, 26, 0.25) !important;
+}
+
+/* Toast Notification Banner */
+#toast-banner {
+  background-color: var(--sunset-orange) !important;
+  color: #0B0D12 !important;
+  border-color: #FFB074 !important;
+}
